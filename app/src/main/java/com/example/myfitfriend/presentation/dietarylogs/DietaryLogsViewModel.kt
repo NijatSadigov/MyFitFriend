@@ -20,6 +20,8 @@ import com.example.myfitfriend.util.Resources
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+
 @HiltViewModel
 class DietaryLogsViewModel
 @Inject constructor(
@@ -41,6 +43,11 @@ class DietaryLogsViewModel
     private val _snackDietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
     val snackDietaryLogs: State<List<DietaryLogResponse>> = _snackDietaryLogs
 
+    private val _date = mutableStateOf<String>(LocalDate.now().toString())
+    val date : State<String> =_date
+
+
+
 
     fun logOut(){
     sharedPreferences.edit().putString(KEY_LOGGED_IN_EMAIL,NO_EMAIL).apply()
@@ -59,10 +66,10 @@ class DietaryLogsViewModel
                     }
                     is Resources.Success -> {
                         _dietaryLogs.value=result.data?: emptyList()
-                        _breakfastDietaryLogs.value=separateDietaryLogsByPartOfDay(BREAKFAST_TIME,dietaryLogs.value )
-                        _lunchDietaryLogs.value=separateDietaryLogsByPartOfDay(LUNCH_TIME,dietaryLogs.value )
-                        _dinnerDietaryLogs.value=separateDietaryLogsByPartOfDay(DINNER_TIME,dietaryLogs.value )
-                        _snackDietaryLogs.value=separateDietaryLogsByPartOfDay(SNACK_TIME,dietaryLogs.value )
+                        _breakfastDietaryLogs.value=separateDietaryLogsByPartOfDay(BREAKFAST_TIME, date.value,dietaryLogs.value )
+                        _lunchDietaryLogs.value=separateDietaryLogsByPartOfDay(LUNCH_TIME, date.value,dietaryLogs.value )
+                        _dinnerDietaryLogs.value=separateDietaryLogsByPartOfDay(DINNER_TIME, date.value,dietaryLogs.value )
+                        _snackDietaryLogs.value=separateDietaryLogsByPartOfDay(SNACK_TIME, date.value,dietaryLogs.value )
 
 
                     }
@@ -72,10 +79,10 @@ class DietaryLogsViewModel
         }
     }
 
-    private fun separateDietaryLogsByPartOfDay(partOfDay:Int, allLogs:List<DietaryLogResponse>):
+    private fun separateDietaryLogsByPartOfDay(partOfDay:Int,date:String, allLogs:List<DietaryLogResponse>):
             List<DietaryLogResponse>{
 
-        return allLogs.filter { log -> log.partOfDay == partOfDay }
+        return allLogs.filter { log -> log.partOfDay == partOfDay && log.date == date }
     }
 
 
