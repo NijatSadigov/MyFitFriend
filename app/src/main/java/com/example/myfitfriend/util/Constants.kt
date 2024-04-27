@@ -11,4 +11,9 @@ object Constants {
     const val NO_EMAIL="NO_EMAIL"
     const val NO_PASSWORD="NO_PASSWORD"
 
+    const val BREAKFAST_TIME=0
+    const val LUNCH_TIME=1
+    const val DINNER_TIME=2
+    const val SNACK_TIME=3
+
 }
