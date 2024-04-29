@@ -10,6 +10,7 @@ import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsScreen
 import com.example.myfitfriend.presentation.login.LoginScreen
 import com.example.myfitfriend.presentation.profile.ProfileScreen
 import com.example.myfitfriend.presentation.register.RegisterScreen
+import com.example.myfitfriend.presentation.showfoods.ShowFoodsScreen
 import com.example.myfitfriend.util.Screen
 
 @Composable
@@ -53,6 +54,10 @@ fun Navigation() {
                 amountOfFood=navBackStackEntry.arguments?.getDouble("amountOfFood"),
                 foodId= navBackStackEntry.arguments?.getInt("foodId"),
                 partOfDay= navBackStackEntry.arguments?.getInt("partOfDay"))
+
+        }
+        composable(Screen.ShowFoodsScreen.route){
+            ShowFoodsScreen(navController=navController)
 
         }
 

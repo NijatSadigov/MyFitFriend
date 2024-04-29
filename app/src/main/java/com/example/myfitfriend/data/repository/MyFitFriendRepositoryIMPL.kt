@@ -2,6 +2,7 @@ package com.example.myfitfriend.data.repository
 
 import com.example.myfitfriend.data.remote.MyFitFriendAPI
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
+import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.reponses.UserResponse
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.data.remote.requests.UserEditRequest
@@ -34,6 +35,13 @@ class MyFitFriendRepositoryIMPL @Inject constructor(val api: MyFitFriendAPI) : M
         return api.getDietaryLogs()
     }
 
+    override suspend fun getDietaryLogByDateAndPartOfDay(
+        date: String,
+        partOfDay: Int
+    ): List<DietaryLogResponse> {
+        return api.getDietaryLogByDateAndPartOfDay(date,partOfDay)
+    }
+
     override suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogRequest): Int {
 return api.insertDietaryLog(dietaryLogRequest).code()
     }
@@ -46,5 +54,17 @@ return api.insertDietaryLog(dietaryLogRequest).code()
         return api.deleteDietaryLog(id).code()
 
     }
+
+    override suspend fun getAllFoods(): List<FoodResponse> {
+        return api.getAllFoods()
+    }
+
+    override suspend fun getFoodById(id: Int): FoodResponse {
+        return api.getFoodById(id)
+    }
+
+    override suspend fun getFoodByQR(qrCode: String): FoodResponse {
+return api.getFoodByQR(qrCode)   }
+
 
 }

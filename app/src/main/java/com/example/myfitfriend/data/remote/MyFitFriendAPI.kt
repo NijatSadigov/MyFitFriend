@@ -1,6 +1,7 @@
 package com.example.myfitfriend.data.remote
 
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
+import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.data.remote.requests.UserRegisterRequest
@@ -26,6 +27,8 @@ interface MyFitFriendAPI {
     @GET("/dietarylog")
     suspend fun getDietaryLogs(
     ):List<DietaryLogResponse>
+    @GET("/dietarylog")
+    suspend fun getDietaryLogByDateAndPartOfDay(@Query("date") date: String, @Query("partOfDay") partOfDay:Int): List<DietaryLogResponse>
 
     @POST("/dietarylog")
     suspend fun insertDietaryLog(
@@ -42,4 +45,14 @@ interface MyFitFriendAPI {
     suspend fun deleteDietaryLog(
         @Query("id") id:Int,
     ):Response<Unit>
+
+    @GET("/foods")
+    suspend fun getAllFoods(): List <FoodResponse>
+
+    @GET("/foods")
+    suspend fun getFoodById(@Query("id") id: Int): FoodResponse
+
+    @GET("/foods")
+    suspend fun getFoodByQR(@Query("qrCode") qrCode: String): FoodResponse
+
 }

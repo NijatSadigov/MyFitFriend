@@ -1,76 +1,94 @@
 package com.example.myfitfriend.presentation.dietarylogs
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsViewModel
 import com.example.myfitfriend.util.Screen
 
+
 @Composable
-fun DietaryLogsScreen (navController: NavController,
-                       viewModel: DietaryLogsViewModel= hiltViewModel(),
+fun DietaryLogsScreen(navController: NavController, viewModel: DietaryLogsViewModel = hiltViewModel()) {
+    // Launch effect to load dietary logs when the component is first composed
+    LaunchedEffect(key1 = true) {
+        viewModel.getDietaryLogs()
+        //viewModel.getDietaryLogByDateAndPartOfDay()
+    }
 
-
-){
-
-LaunchedEffect(key1 = true) {
-    viewModel.getDietaryLogs()
-}
-
-    Scaffold (
+    // Main scaffold with top app bar and floating action button
+    Scaffold(
         topBar = {
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()){
-                Text(text="MyFitFriend")
-                Text(text="Log out", modifier = Modifier.clickable { viewModel.logOut()
-                navController.popBackStack()
+            TopAppBar(title = { Text(text = "MyFitFriend") }, actions = {
+                TextButton(onClick = {
+                    viewModel.logOut() // Logout and navigate back to login screen
+                    navController.popBackStack()
                     navController.navigate(Screen.LoginScreen.route)
-                })
-                Text(text = "Profile Settings", Modifier.clickable {
-
-
-                })
-
-
-            }
-
+                }) {
+                    Text("Log Out")
+                }
+                TextButton(onClick = {
+                    // Add navigation to profile settings
+                }) {
+                    Text("Profile Settings")
+                }
+            })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate((Screen.AddEditDietaryLogScreen.route))
+                navController.navigate(Screen.AddEditDietaryLogScreen.route) // Navigate to add/edit meal screen
             }) {
-                Icon(imageVector = Icons.Default.Add , contentDescription = "Add meal")
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add meal")
             }
         }
-    ){
-        if(viewModel.dietaryLogs.value.isNotEmpty()){
-            LazyColumn (modifier = Modifier.padding(it)){
-
-            }
-        }
-        else{
-            Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Text(text="You don't have any meal:")
-            }
+    ) { paddingValues ->
+        Row(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
+            NutritionalInfoSection(viewModel = viewModel) // Section for displaying nutritional info
+            Spacer(modifier = Modifier.width(16.dp)) // Spacing between sections
+            MealButtonsSection(viewModel = viewModel, navController = navController) // Section with meal buttons
         }
     }
-
 }
+
+@Composable
+fun NutritionalInfoSection(viewModel: DietaryLogsViewModel) {
+    Column(modifier = Modifier.width(200.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Total Calories: ${viewModel.totalCalories.value}", style = MaterialTheme.typography.h6)
+        Text("Total Carbs: ${viewModel.totalCarbs.value}g", style = MaterialTheme.typography.body1)
+        Text("Total Protein: ${viewModel.totalProtein.value}g", style = MaterialTheme.typography.body1)
+        Text("Total Fats: ${viewModel.totalFats.value}g", style = MaterialTheme.typography.body1)
+    }
+}
+
+@Composable
+fun MealButtonsSection(viewModel: DietaryLogsViewModel, navController: NavController) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        // Button for breakfast, showing total calories for this meal type
+      MealButton("Breakfast", viewModel.totalBreakfastCalories.value , navController, Screen.BreakfastScreen.route)
+        // Button for lunch, showing total calories for this meal type
+       MealButton("Lunch", viewModel.totalLunchCalories.value, navController, Screen.LunchScreen.route)
+        // Button for dinner, showing total calories for this meal type
+       MealButton("Dinner", viewModel.totalDinnerCalories.value, navController, Screen.DinnerScreen.route)
+        // Button for snack, showing total calories for this meal type
+        MealButton("Snack", viewModel.totalSnackCalories.value, navController, Screen.SnackScreen.route)
+    }
+}
+
+@Composable
+fun MealButton(mealType: String, calories: Double, navController: NavController, route: String) {
+    Button(onClick = { navController.navigate(route) }) { // Navigate to specific meal screen on button click
+        Column {
+            Text(mealType, style = MaterialTheme.typography.subtitle1) // Show meal type
+            Text("${calories} kcal", style = MaterialTheme.typography.body2) // Show calories for the meal
+        }
+    }
+}
+
+
