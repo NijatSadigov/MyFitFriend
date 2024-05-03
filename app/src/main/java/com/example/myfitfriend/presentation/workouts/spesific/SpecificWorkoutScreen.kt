@@ -70,7 +70,8 @@ fun SpecificWorkoutContent(
                     ExerciseCard(
                         exercise = exercise,
                         onEditClicked = {
-                            navController.navigate("${Screen.EditExerciseScreen.route}?workoutId=${workoutId}&?exerciseId=${exercise.exerciseId}")
+                            println("exercise id: ${exercise.exerciseId} ")
+                            navController.navigate("${Screen.EditExerciseScreen.route}?workoutId=${workoutId}&exerciseId=${exercise.exerciseId}")
                         },
                         onDeleteClicked = { ex ->
                             viewModel.onDeleteExercise(ex.exerciseId, id)
@@ -122,12 +123,12 @@ fun ExerciseCard(
                 ) {
                     Text(text = exercise.title, style = MaterialTheme.typography.h3)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = exercise.description, style = MaterialTheme.typography.h4)
+                    Text(text ="Description:\n ${exercise.description}", style = MaterialTheme.typography.h6)
                 }
                 Column(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 ) {
-                    Text(text = "Duration: ${exercise.restTime} min", style = MaterialTheme.typography.h6)
+                    Text(text = "rest: ${exercise.restTime} second", style = MaterialTheme.typography.h6)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = "Weights: ${exercise.weights} kg", style = MaterialTheme.typography.h6)
                     Text(text = "Sets: ${exercise.setCount}", style = MaterialTheme.typography.h6)

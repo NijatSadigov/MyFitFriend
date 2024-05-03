@@ -73,6 +73,7 @@ class EditExerciseScreenViewModel @Inject constructor(
 
                     }
                     is Resources.Success -> {
+                        println(result.data)
                         if(result.data!=null){
                         _title.value=result.data.title
                             _description.value=result.data.description
