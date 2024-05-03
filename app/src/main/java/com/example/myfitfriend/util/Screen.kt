@@ -14,4 +14,13 @@ sealed class Screen(val route:String) {
     object DinnerScreen :Screen("dinner")
     object SnackScreen:Screen("snack")
 
+    //workouts
+    object WorkoutScreen:Screen("workouts")
+
+    object SpecificWorkoutScreen : Screen("specific_workout")
+    object EditWorkoutScreen:Screen("edit_workout")
+    object AddWorkoutScreen:Screen("add_workout")
+    //object ExercisesScreen:Screen("exercises")
+    object AddExerciseScreen:Screen("add_exercise")
+    object EditExerciseScreen:Screen("edit_exercise")
 }

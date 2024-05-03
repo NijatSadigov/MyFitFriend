@@ -36,6 +36,8 @@ class LoginViewModel @Inject constructor(
     private val _logInState= mutableStateOf(false)
      val logInState:State<Boolean> =_logInState
 
+
+
     fun onEmailChange(email:String){
         _emailState.value=email
     }

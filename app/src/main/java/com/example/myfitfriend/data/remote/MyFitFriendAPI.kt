@@ -1,8 +1,15 @@
 package com.example.myfitfriend.data.remote
 
+import com.MyFitFriend.data.model.Exercise
+import com.MyFitFriend.requests.ExerciseRequest
+import com.MyFitFriend.requests.WorkoutRequest
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
+import com.example.myfitfriend.data.remote.reponses.User
+import com.example.myfitfriend.data.remote.reponses.UserResponse
+import com.example.myfitfriend.data.remote.reponses.Workout
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
+import com.example.myfitfriend.data.remote.requests.UserEditRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.data.remote.requests.UserRegisterRequest
 import retrofit2.Response
@@ -54,5 +61,70 @@ interface MyFitFriendAPI {
 
     @GET("/foods")
     suspend fun getFoodByQR(@Query("qrCode") qrCode: String): FoodResponse
+
+    @GET("/profile")
+    suspend fun getUserDetails(): User
+
+    @PATCH("/profile")
+    suspend fun updateProfile(
+        @Body userEditRequest: UserEditRequest
+    ):Response<Unit>
+    //Workouts
+    @GET("/workout")
+    suspend fun getWorkouts(
+
+    ):List<Workout>
+    @GET("/workout")
+    suspend fun getWorkoutById(
+        @Query("workoutId") workoutId: Int
+    ):Workout
+
+    @GET ("/exercises")
+    suspend fun getExercisesByWorkoutId(
+        @Query("workoutId") workoutId: Int
+
+    ):List<Exercise>
+    @POST ("/exercises")
+    suspend fun addExerciseToWorkout(
+        @Query("workoutId") workoutId: Int,
+        @Body exerciseRequest: ExerciseRequest
+
+    ):Response<Unit>
+
+    //updateexercise
+    @PATCH ("/exercises")
+    suspend fun updateExerciseToWorkout(
+        @Query("workoutId") workoutId: Int,
+        @Query("exerciseId") exerciseId: Int,
+
+        @Body exerciseRequest: ExerciseRequest
+
+    ):Response<Unit>
+
+    @DELETE ("/exercises")
+    suspend fun deleteExerciseFromWorkout(
+        @Query("exerciseId") exerciseId: Int,
+
+        ):Response<Unit>
+
+    @POST ("/workout")
+    suspend fun createWorkout(
+        @Body workoutRequest: WorkoutRequest
+    ):Response<Unit>
+    @DELETE("/workout")
+    suspend fun deleteWorkoutById(@Query("workoutId")workoutId:Int):Response<Unit>
+
+    @PATCH("/workout")
+    suspend fun editWorkout(
+        @Query("workoutId") workoutId: Int,
+        @Body workoutRequest:WorkoutRequest
+        ):Response<Unit>
+    @GET("exercises")
+    suspend fun getOneExercise(
+        @Query("exerciseId") exerciseId: Int)
+:Exercise
+
+
+
 
 }

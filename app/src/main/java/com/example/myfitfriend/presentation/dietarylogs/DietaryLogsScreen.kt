@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,17 +30,11 @@ fun DietaryLogsScreen(navController: NavController, viewModel: DietaryLogsViewMo
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(text = "MyFitFriend") }, actions = {
+
                 TextButton(onClick = {
-                    viewModel.logOut() // Logout and navigate back to login screen
-                    navController.popBackStack()
-                    navController.navigate(Screen.LoginScreen.route)
+                    navController.navigate(Screen.ProfileScreen.route) // Navigate to profile settings screen
                 }) {
-                    Text("Log Out")
-                }
-                TextButton(onClick = {
-                    // Add navigation to profile settings
-                }) {
-                    Text("Profile Settings")
+                    Text("Profile Settings", color = MaterialTheme.colors.onPrimary)
                 }
             })
         },
@@ -47,12 +44,15 @@ fun DietaryLogsScreen(navController: NavController, viewModel: DietaryLogsViewMo
             }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add meal")
             }
-        }
+        },
+        bottomBar = { DietaryLogsBottomBar(navController) }
+
+
     ) { paddingValues ->
         Row(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
-            NutritionalInfoSection(viewModel = viewModel) // Section for displaying nutritional info
-            Spacer(modifier = Modifier.width(16.dp)) // Spacing between sections
-            MealButtonsSection(viewModel = viewModel, navController = navController) // Section with meal buttons
+            NutritionalInfoSection(viewModel = viewModel)
+            Spacer(modifier = Modifier.width(16.dp))
+            MealButtonsSection(viewModel = viewModel, navController = navController)
         }
     }
 }
@@ -90,5 +90,31 @@ fun MealButton(mealType: String, calories: Double, navController: NavController,
         }
     }
 }
+@Composable
+fun DietaryLogsBottomBar(navController: NavController) {
+    BottomNavigation {
+        BottomNavigationItem(
+            selected = true,
+            onClick = { /* Current Screen */ },
+            label = { Text("Diet") },
+            icon = { Icon(Icons.Default.List, contentDescription = "Diet Page") }
+        )
+        BottomNavigationItem(
+            selected = false,
+            onClick = { navController.navigate(Screen.WorkoutScreen.route) },
+            label = { Text("Workouts") },
+            icon = { Icon(Icons.Default.Person, contentDescription = "Workout Page") }
+        )
+        BottomNavigationItem(
+            selected = false,
+            onClick = {
+                //navController.navigate(Screen.GroupsScreen.route)
+                },
+            label = { Text("Groups") },
+            icon = { Icon(Icons.Default.Face, contentDescription = "Groups") }
+        )
+    }
+}
+
 
 
