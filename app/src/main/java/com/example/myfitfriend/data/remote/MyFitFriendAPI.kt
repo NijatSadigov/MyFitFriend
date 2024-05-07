@@ -3,6 +3,7 @@ package com.example.myfitfriend.data.remote
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.reponses.User
@@ -123,6 +124,26 @@ interface MyFitFriendAPI {
     suspend fun getOneExercise(
         @Query("exerciseId") exerciseId: Int)
 :Exercise
+
+    @GET("dietgroup")
+    suspend fun getGroups(
+
+    ):List<DietGroup>
+
+    @GET("dietgroup")
+    suspend fun getUserDetailsById(
+        @Query("groupUserId") groupUserId:Int
+    ):User
+    @POST("dietgroup")
+    suspend fun createGroup(
+        @Query("groupname") groupname:String
+
+    ):Response<Unit>
+    @GET("dietgroup")
+    suspend fun getMembers(
+        @Query("groupId") groupId:Int
+
+    ):List<Int>
 
 
 

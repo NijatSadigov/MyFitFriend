@@ -108,7 +108,7 @@ fun DietaryLogsBottomBar(navController: NavController) {
         BottomNavigationItem(
             selected = false,
             onClick = {
-                //navController.navigate(Screen.GroupsScreen.route)
+                navController.navigate(Screen.GroupsScreen.route)
                 },
             label = { Text("Groups") },
             icon = { Icon(Icons.Default.Face, contentDescription = "Groups") }

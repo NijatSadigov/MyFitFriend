@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myfitfriend.presentation.addeditdietarylog.AddEditDietaryLogScreen
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsScreen
+import com.example.myfitfriend.presentation.groups.addgroup.CreateGroupScreen
+import com.example.myfitfriend.presentation.groups.mainscreen.GroupsScreen
 import com.example.myfitfriend.presentation.login.LoginScreen
 import com.example.myfitfriend.presentation.profile.ProfileScreen
 import com.example.myfitfriend.presentation.register.RegisterScreen
@@ -109,6 +111,26 @@ fun Navigation() {
                 exerciseId = navBackStackEntry.arguments?.getString("exerciseId")?.toIntOrNull() ?: -1
             )
         }
+
+        composable(Screen.GroupsScreen.route){
+
+            GroupsScreen(navController=navController)
+        }
+        composable(Screen.CreateGroupScreen.route){
+            CreateGroupScreen(navController = navController)
+        }
+
+
+//        // object GroupsScreen:Screen("groups")  //shows users already joined groups , and on the top of page  a button to move to addgroup screen and invites button which also shows current number of invites and when u click it it should go invitesScreen
+//    //there are cards which shows users group name, owner name, description and group id
+//    object CurrentGroupScreen:Screen("current_group")
+//
+//    object AddGroupScreen:Screen("create_group") //
+//    object EditGroupScreen:Screen("editGroup") //avaiable for only owners
+//    object InviteUserToGroupScreen:Screen("invite_user_to_group")
+//    object CurrentInvitesScreen:Screen("invites_of_user")
+
+
 
 
 

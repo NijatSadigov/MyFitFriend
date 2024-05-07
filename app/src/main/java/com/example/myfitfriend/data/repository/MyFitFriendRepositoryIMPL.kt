@@ -4,6 +4,7 @@ import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
 import com.example.myfitfriend.data.remote.MyFitFriendAPI
+import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.reponses.User
@@ -14,6 +15,7 @@ import com.example.myfitfriend.data.remote.requests.UserEditRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.data.remote.requests.UserRegisterRequest
 import com.example.myfitfriend.domain.repository.MyFitFriendRepository
+import retrofit2.Response
 import javax.inject.Inject
 
 class MyFitFriendRepositoryIMPL @Inject constructor(val api: MyFitFriendAPI) : MyFitFriendRepository {
@@ -113,6 +115,24 @@ return api.deleteExerciseFromWorkout(exerciseId).code()    }
 
     override suspend fun getExercise(exerciseId: Int): Exercise {
         return api.getOneExercise(exerciseId)
+    }
+
+
+    //groups
+    override suspend fun getGroupsOfUser(): List<DietGroup> {
+        return api.getGroups()
+    }
+
+    override suspend fun getUserDetailsById(userId: Int): User {
+        return api.getUserDetailsById(userId)
+    }
+
+    override suspend fun createGroup(groupName: String): Int {
+        return api.createGroup(groupName).code()
+    }
+
+    override suspend fun getGroupMembersByGroupId(groupId: Int): List<Int> {
+        return api.getMembers(groupId)
     }
 
 }

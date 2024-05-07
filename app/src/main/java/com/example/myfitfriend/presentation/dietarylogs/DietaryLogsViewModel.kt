@@ -74,13 +74,7 @@ class DietaryLogsViewModel
     private val _totalSnackCalories = mutableStateOf(0.0)
     val totalSnackCalories: State<Double> = _totalSnackCalories
 
-    fun logOut(){
-        sharedPreferences.edit().apply {
-            putString(KEY_LOGGED_IN_EMAIL, NO_EMAIL)
-            putString(KEY_PASSWORD, NO_PASSWORD)
-            apply()
-        }
-}
+
     fun getDietaryLogs(){
         viewModelScope.launch {
             println("Launcs")

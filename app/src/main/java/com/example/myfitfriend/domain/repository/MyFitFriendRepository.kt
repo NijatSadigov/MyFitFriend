@@ -3,6 +3,7 @@ package com.example.myfitfriend.domain.repository
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.reponses.User
@@ -12,6 +13,7 @@ import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.data.remote.requests.UserEditRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.data.remote.requests.UserRegisterRequest
+import retrofit2.Response
 
 interface MyFitFriendRepository {
 
@@ -48,6 +50,10 @@ interface MyFitFriendRepository {
     suspend fun updateExercise(workoutId: Int,exerciseId:Int, exerciseRequest: ExerciseRequest):Int
     suspend fun deleteExercise(exerciseId:Int):Int
 
-
+//groups
+    suspend fun getGroupsOfUser():List<DietGroup>
+    suspend fun getUserDetailsById(userId:Int):User
+    suspend fun createGroup(groupName:String):Int
+    suspend fun getGroupMembersByGroupId(groupId:Int):List<Int>
 
 }
