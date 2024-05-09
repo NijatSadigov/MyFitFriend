@@ -51,6 +51,9 @@ class MyFitFriendRepositoryIMPL @Inject constructor(val api: MyFitFriendAPI) : M
         return api.getDietaryLogByDateAndPartOfDay(date,partOfDay)
     }
 
+    override suspend fun getDietaryLogById(dietaryLogId: Int): DietaryLogResponse {
+        return api.getDietaryLogById(dietaryLogId)
+    }
     override suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogRequest): Int {
 return api.insertDietaryLog(dietaryLogRequest).code()
     }

@@ -23,7 +23,7 @@ interface MyFitFriendRepository {
     suspend fun getUserDetails():User
     suspend fun getDietaryLogs():List<DietaryLogResponse>
     suspend fun getDietaryLogByDateAndPartOfDay(date:String, partOfDay:Int):List<DietaryLogResponse>
-
+    suspend fun getDietaryLogById(dietaryLogId:Int):DietaryLogResponse
     suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogRequest):Int
     suspend fun updateDietaryLog(id:Int, dietaryLogRequest: DietaryLogRequest):Int
     suspend fun deleteDietaryLog(id:Int):Int

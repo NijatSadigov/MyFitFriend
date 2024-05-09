@@ -1,5 +1,6 @@
 package com.example.myfitfriend.domain.use_case.dietarylogs
 
+import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.domain.repository.MyFitFriendRepository
@@ -10,15 +11,14 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class UpdateDietaryLogUseCase @Inject constructor(
+class DeleteDietaryLogUseCase @Inject constructor(
     private val repository:MyFitFriendRepository
 ){
-operator fun invoke(id:Int, dietaryLogRequest: DietaryLogRequest):Flow<Resources<Int>> =flow{
+operator fun invoke(id:Int):Flow<Resources<Int>> =flow{
 
 try {
         emit(Resources.Loading<Int>())
-       val response= repository.updateDietaryLog(id, dietaryLogRequest)
-    //println("response:$response")
+       val response= repository.deleteDietaryLog(id)
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){

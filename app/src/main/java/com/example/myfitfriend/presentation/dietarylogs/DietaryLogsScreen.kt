@@ -40,7 +40,7 @@ fun DietaryLogsScreen(navController: NavController, viewModel: DietaryLogsViewMo
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate(Screen.AddEditDietaryLogScreen.route) // Navigate to add/edit meal screen
+                navController.navigate(Screen.ShowFoodsScreen.route) // Navigate to add/edit meal screen
             }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add meal")
             }
@@ -71,19 +71,20 @@ fun NutritionalInfoSection(viewModel: DietaryLogsViewModel) {
 fun MealButtonsSection(viewModel: DietaryLogsViewModel, navController: NavController) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         // Button for breakfast, showing total calories for this meal type
-      MealButton("Breakfast", viewModel.totalBreakfastCalories.value , navController, Screen.BreakfastScreen.route)
+      MealButton("Breakfast", viewModel.totalBreakfastCalories.value , navController, Screen.SpecificPartOfDayDietaryLogScreen.route+ "?partOfDay=0")
         // Button for lunch, showing total calories for this meal type
-       MealButton("Lunch", viewModel.totalLunchCalories.value, navController, Screen.LunchScreen.route)
+       MealButton("Lunch", viewModel.totalLunchCalories.value, navController, Screen.SpecificPartOfDayDietaryLogScreen.route+ "?partOfDay=1")
         // Button for dinner, showing total calories for this meal type
-       MealButton("Dinner", viewModel.totalDinnerCalories.value, navController, Screen.DinnerScreen.route)
+       MealButton("Dinner", viewModel.totalDinnerCalories.value, navController, Screen.SpecificPartOfDayDietaryLogScreen.route+ "?partOfDay=2")
         // Button for snack, showing total calories for this meal type
-        MealButton("Snack", viewModel.totalSnackCalories.value, navController, Screen.SnackScreen.route)
+        MealButton("Snack", viewModel.totalSnackCalories.value, navController, Screen.SpecificPartOfDayDietaryLogScreen.route+ "?partOfDay=3")
     }
 }
 
 @Composable
 fun MealButton(mealType: String, calories: Double, navController: NavController, route: String) {
-    Button(onClick = { navController.navigate(route) }) { // Navigate to specific meal screen on button click
+    Button(onClick = {
+        navController.navigate(route) }) { // Navigate to specific meal screen on button click
         Column {
             Text(mealType, style = MaterialTheme.typography.subtitle1) // Show meal type
             Text("${calories} kcal", style = MaterialTheme.typography.body2) // Show calories for the meal

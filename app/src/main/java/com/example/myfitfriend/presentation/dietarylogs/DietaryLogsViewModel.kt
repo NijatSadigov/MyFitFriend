@@ -28,7 +28,6 @@ import java.time.LocalDate
 @HiltViewModel
 class DietaryLogsViewModel
 @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
     private val getDietaryLogsUseCase: GetDietaryLogsUseCase,
     private val getFoodUseCase: GetFoodUseCase,
     private val getDietaryLogByDateAndPartOfDayUseCase: GetDietaryLogByDateAndPartOfDayUseCase

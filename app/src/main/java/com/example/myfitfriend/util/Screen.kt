@@ -6,13 +6,12 @@ sealed class Screen(val route:String) {
     object DietaryLogScreen:Screen("dietary_log_screen")
     object AddEditDietaryLogScreen:Screen("add_edit_dietary_log_screen")
     object ProfileScreen:Screen("profile")
-    object EditProfileScreen:Screen("edit_profile")
-    object ShowFoodsScreen:Screen("show_foods")
 
-    object BreakfastScreen:Screen("breakfast")
-    object LunchScreen:Screen("lunch")
-    object DinnerScreen :Screen("dinner")
-    object SnackScreen:Screen("snack")
+    object ShowFoodsScreen:Screen("show_foods")
+    object AddDietaryLogScreen:Screen("add_dietary_log_food")
+    object SpecificPartOfDayDietaryLogScreen:Screen("specific_part_of_day_dietary_log_screen")
+    object EditDietaryLogScreen:Screen("add_dietary_log_food")
+
 
     //workouts
     object WorkoutScreen:Screen("workouts")

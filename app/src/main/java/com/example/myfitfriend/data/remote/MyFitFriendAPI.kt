@@ -38,10 +38,16 @@ interface MyFitFriendAPI {
     @GET("/dietarylog")
     suspend fun getDietaryLogByDateAndPartOfDay(@Query("date") date: String, @Query("partOfDay") partOfDay:Int): List<DietaryLogResponse>
 
+    @GET("/dietarylog")
+    suspend fun getDietaryLogById(
+        @Query("dietaryLogId") dietaryLogId: Int
+    ):DietaryLogResponse
+
     @POST("/dietarylog")
     suspend fun insertDietaryLog(
         @Body dietaryLogRequest: DietaryLogRequest
     ):Response<Unit>
+
 
     @PATCH("dietarylog")
     suspend fun updateDietaryLog(

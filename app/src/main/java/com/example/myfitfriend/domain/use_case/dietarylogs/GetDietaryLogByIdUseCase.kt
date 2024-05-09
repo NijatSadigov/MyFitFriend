@@ -1,5 +1,7 @@
 package com.example.myfitfriend.domain.use_case.dietarylogs
 
+import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
+import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.domain.repository.MyFitFriendRepository
@@ -10,25 +12,25 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class UpdateDietaryLogUseCase @Inject constructor(
+class GetDietaryLogByIdUseCase @Inject constructor(
     private val repository:MyFitFriendRepository
 ){
-operator fun invoke(id:Int, dietaryLogRequest: DietaryLogRequest):Flow<Resources<Int>> =flow{
+operator fun invoke(id:Int):Flow<Resources<DietaryLogResponse>> =flow{
 
 try {
-        emit(Resources.Loading<Int>())
-       val response= repository.updateDietaryLog(id, dietaryLogRequest)
-    //println("response:$response")
+        emit(Resources.Loading<DietaryLogResponse>())
+       val response= repository.getDietaryLogById(id)
+    println("GetDietaryLogByIdUseCase : $response")
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){
     emit(
-        Resources.Error<Int>(message =  e.localizedMessage?:"Unknown error occured")
+        Resources.Error<DietaryLogResponse>(message =  e.localizedMessage?:"Unknown error occured")
     )
 }
     catch (e:IOException){
         emit(
-            Resources.Error<Int>(message = "could not determine err")
+            Resources.Error<DietaryLogResponse>(message = "could not determine err")
         )
     }
 
