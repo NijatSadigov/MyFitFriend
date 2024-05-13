@@ -39,16 +39,20 @@ class RegisterViewModel @Inject constructor(
     private val _userActivityLevel = mutableIntStateOf(0)
     val userActivityLevel: State<Int> =_userActivityLevel
 
-    private val _userWeight = mutableStateOf("")
+    private val _userWeight = mutableStateOf("0.0") // Initial value set to "0.0" instead of ""
     val userWeight: State<String> = _userWeight
 
-    //private val _userHeight = mutableDoubleStateOf(0.0)
-    //val userHeight: State<Double> =_userHeight
-    private var _userHeight = mutableStateOf("") // Internal representation as Double
-    val userHeight: State<String> =  _userHeight
+    private val _userHeight = mutableStateOf("0.0") // Initial value set to "0.0" instead of ""
+    val userHeight: State<String> = _userHeight
+
+    private val _userAge = mutableStateOf(0) // Assuming 18 as a default age
+    val userAge: State<Int> = _userAge
 
     private val _isRegistered = mutableStateOf(false)
     val isRegistered: State<Boolean> =_isRegistered
+
+    private val _userSex = mutableStateOf(false)
+    val userSex: State<Boolean> =_userSex
 
     ///CHANGES
 
@@ -77,7 +81,12 @@ class RegisterViewModel @Inject constructor(
             _userActivityLevel.intValue=userActivity
 
     }
-
+    fun onSexChange(sex:Boolean){
+        _userSex.value=sex
+    }
+    fun onAgeChange(age:Int){
+        _userAge.value=age
+    }
     fun onRegister(){
         viewModelScope.launch {
             val safeWeight = userWeight.value.toDoubleOrNull() ?: 0.0
@@ -91,7 +100,10 @@ class RegisterViewModel @Inject constructor(
                 username=userName.value,
                 activityLevel = safeActivityLevel,
                 height = safeHeight,
-                weight = safeWeight )).onEach {
+                weight = safeWeight,
+                age = userAge.value,
+                sex=userSex.value
+                )).onEach {
                     result->
 
                 when(result){

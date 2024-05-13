@@ -7,16 +7,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.util.Screen
+import kotlinx.coroutines.delay
 
 @Composable
 fun GroupsScreen(
@@ -67,17 +71,18 @@ fun GroupsBottomBar(navController: NavController) {
             label = { Text("Diet") },
             icon = { Icon(Icons.Default.List, contentDescription = "Diet Page") }
         )
-        BottomNavigationItem(
-            selected = true,
-            onClick = { /* Current Screen */ },
-            label = { Text("Groups") },
-            icon = { Icon(Icons.Default.Face, contentDescription = "Groups Page") }
-        )
+
         BottomNavigationItem(
             selected = false,
             onClick = { navController.navigate(Screen.WorkoutScreen.route) },
             label = { Text("Workouts") },
             icon = { Icon(Icons.Default.Person, contentDescription = "Workout Page") }
+        )
+        BottomNavigationItem(
+            selected = true,
+            onClick = { /* Current Screen */ },
+            label = { Text("Groups") },
+            icon = { Icon(Icons.Default.Face, contentDescription = "Groups Page") }
         )
     }
 }
@@ -89,29 +94,78 @@ fun GroupsList(groups: List<DietGroup>, ownerName: String, navController: NavCon
             GroupCard(
                 group = group,
                 ownerName = ownerName,
-                onClick = { groupId ->
-                    // navigate to specific group details
+                navController = navController,
+                viewModel = viewModel,
+                onDeleteConfirmed = {
+                   // println("groupId: ${group.groupId}")
+                    viewModel.deleteGroup(group.groupId)
                 }
             )
         }
     }
 }
-
 @Composable
-fun GroupCard(group: DietGroup, ownerName: String, onClick: (Int) -> Unit) {
+fun GroupCard(group: DietGroup, ownerName: String, navController: NavController, viewModel: GroupsScreenViewModel, onDeleteConfirmed: (Int) -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+    var showSnackbar by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Are you sure you want to delete this group?") },
+            confirmButton = {
+                Button(onClick = {
+                    onDeleteConfirmed(group.groupId)
+                    showDialog = false
+                    showSnackbar = true
+                }) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (showSnackbar) {
+        LaunchedEffect(key1 = Unit) {
+            delay(3000) // Show the snackbar for 3 seconds
+            showSnackbar = false
+        }
+        Snackbar {
+            Text("Group deleted successfully")
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { onClick(group.groupId) },
+            .clickable { navController.navigate("${Screen.SpecificGroupScreen.route}?groupId=${group.groupId}") },
         elevation = 4.dp
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(group.groupName, style = MaterialTheme.typography.h6)
-            Spacer(Modifier.height(4.dp))
-            Text("Owner: $ownerName", style = MaterialTheme.typography.body1)
+            Column {
+                Text(group.groupName, style = MaterialTheme.typography.h6)
+                Spacer(Modifier.height(4.dp))
+                Text("Owner: $ownerName", style = MaterialTheme.typography.body1)
+            }
+            Row {
+                IconButton(onClick = { navController.navigate("${Screen.EditGroupScreen.route}?groupId=${group.groupId}") }) {
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit")
+                }
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                }
+            }
         }
     }
 }

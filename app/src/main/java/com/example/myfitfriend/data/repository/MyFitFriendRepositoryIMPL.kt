@@ -122,7 +122,11 @@ return api.deleteExerciseFromWorkout(exerciseId).code()    }
 
 
     //groups
+    override suspend fun getGroupById(groupId: Int): DietGroup {
+        return api.getGroupById(groupId)
+    }
     override suspend fun getGroupsOfUser(): List<DietGroup> {
+       println("repository ${api.getGroups()}")
         return api.getGroups()
     }
 
@@ -138,4 +142,18 @@ return api.deleteExerciseFromWorkout(exerciseId).code()    }
         return api.getMembers(groupId)
     }
 
+    override suspend fun editDietGroup(groupId: Int, groupName: String): Int {
+        return api.editGroup(groupId,groupName).code()
+    }
+    override suspend fun deleteGroup(groupId: Int): Int {
+        return api.deleteGroup(groupId).code()
+    }
+
+    override suspend fun kickUser(userId: Int, groupId: Int):Int {
+        return api.kickUser(wantedUserId = userId,groupId=groupId).code()
+    }
+
+    override suspend fun getDietaryLogOfUserByUserIdForGroup(wantedUserId: Int): List<DietaryLogResponse> {
+        return api.getDietaryLogOfUserByUserIdForGroup(wantedUserId)
+    }
 }

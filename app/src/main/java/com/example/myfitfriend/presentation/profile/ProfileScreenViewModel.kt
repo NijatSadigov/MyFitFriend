@@ -40,6 +40,16 @@ class ProfileScreenViewModel @Inject constructor(
     private val _userActivityLevel = mutableIntStateOf(0)
     val userActivityLevel: State<Int> =_userActivityLevel
 
+    private val _userSex = mutableStateOf(false)
+    val userSex: State<Boolean> =_userSex
+    private val _userAge = mutableStateOf(0)
+    val userAge: State<Int> =_userAge
+    fun onSexChange(sex:Boolean){
+        _userSex.value=sex
+    }
+    fun onAgeChange(age:Int){
+        _userAge.value=age
+    }
     fun logOut(){
         sharedPreferences.edit().apply {
             putString(KEY_LOGGED_IN_EMAIL, NO_EMAIL)
@@ -69,6 +79,8 @@ class ProfileScreenViewModel @Inject constructor(
                                 _userWeight.doubleValue = userData.weight
                                 _userHeight.doubleValue = userData.height
                                 _userActivityLevel.intValue = userData.activityLevel
+                                _userAge.value=userData.age
+                                _userSex.value=userData.sex
                             } ?: println("No user data available.")
                         }
                     }
@@ -84,13 +96,15 @@ class ProfileScreenViewModel @Inject constructor(
     }
 
 
-    fun saveChanges() {
+    fun saveChanges(onSuccess: () -> Unit) {
         viewModelScope.launch {
 
             editProfileUserCase(UserEditRequest(username=userName.value,
                 weight = userWeight.value,
                 height = userHeight.value,
-                activityLevel = userActivityLevel.value
+                activityLevel = userActivityLevel.value,
+                sex = userSex.value,
+                age = userAge.value
                 )).onEach {
                     result->
                     when(result){
@@ -104,7 +118,7 @@ class ProfileScreenViewModel @Inject constructor(
                         }
                         is Resources.Success -> {
                             if(result.data==200){
-                                println("done")
+                                onSuccess()
                             }
                         }
                     }
@@ -143,5 +157,6 @@ class ProfileScreenViewModel @Inject constructor(
     fun updateActivityLevel(newLevel: Int) {
         _userActivityLevel.intValue = newLevel
     }
+
 
 }

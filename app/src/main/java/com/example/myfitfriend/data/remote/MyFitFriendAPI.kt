@@ -42,6 +42,10 @@ interface MyFitFriendAPI {
     suspend fun getDietaryLogById(
         @Query("dietaryLogId") dietaryLogId: Int
     ):DietaryLogResponse
+    @GET("/dietarylog")
+    suspend fun getDietaryLogOfUserByUserIdForGroup(
+        @Query("wantedUserId") wantedUserId: Int
+    ):List<DietaryLogResponse>
 
     @POST("/dietarylog")
     suspend fun insertDietaryLog(
@@ -131,26 +135,46 @@ interface MyFitFriendAPI {
         @Query("exerciseId") exerciseId: Int)
 :Exercise
 
-    @GET("dietgroup")
+    @GET("/dietgroup")
     suspend fun getGroups(
 
     ):List<DietGroup>
+    @GET("/dietgroup")
+    suspend fun getGroupById(
+        @Query("groupId") groupId:Int
+    ):DietGroup
 
-    @GET("dietgroup")
+    @GET("/dietgroup")
     suspend fun getUserDetailsById(
         @Query("groupUserId") groupUserId:Int
     ):User
-    @POST("dietgroup")
+    @POST("/dietgroup")
     suspend fun createGroup(
         @Query("groupname") groupname:String
 
     ):Response<Unit>
-    @GET("dietgroup")
+    @GET("/dietgroup/members")
     suspend fun getMembers(
         @Query("groupId") groupId:Int
 
     ):List<Int>
+    @DELETE("/dietgroup")
+    suspend fun deleteGroup
+    (
+        @Query("groupId") groupId:Int
 
+        ):Response<Unit>
+    @PATCH("/dietgroup")
+    suspend fun editGroup(
+        @Query("groupId") groupId:Int,
+        @Query("groupname") groupName:String
+    ):Response<Unit>
+    @DELETE("/dietgroup/members")
+    suspend fun kickUser(
+        @Query("wanteduserid")wantedUserId:Int,
+        @Query("groupId")groupId:Int,
+
+        ):Response<Unit>
 
 
 

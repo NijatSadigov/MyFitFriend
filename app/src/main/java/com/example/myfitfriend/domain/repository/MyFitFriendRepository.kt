@@ -51,9 +51,13 @@ interface MyFitFriendRepository {
     suspend fun deleteExercise(exerciseId:Int):Int
 
 //groups
+    suspend fun getGroupById(groupId:Int):DietGroup
     suspend fun getGroupsOfUser():List<DietGroup>
     suspend fun getUserDetailsById(userId:Int):User
     suspend fun createGroup(groupName:String):Int
     suspend fun getGroupMembersByGroupId(groupId:Int):List<Int>
-
+    suspend fun deleteGroup(groupId: Int):Int
+    suspend fun editDietGroup(groupId: Int,groupName: String):Int
+    suspend fun kickUser(userId: Int,groupId: Int):Int
+    suspend fun getDietaryLogOfUserByUserIdForGroup(wantedUserId:Int):List<DietaryLogResponse>
 }

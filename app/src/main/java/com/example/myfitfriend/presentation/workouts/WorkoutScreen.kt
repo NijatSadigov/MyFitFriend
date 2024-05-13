@@ -80,7 +80,7 @@ fun WorkoutBottomBar(navController: NavController) {
         )
         BottomNavigationItem(
             selected = false,
-            onClick = { //navController.navigate(Screen.DietGroupsScreen.route)
+            onClick = { navController.navigate(Screen.GroupsScreen.route)
                       },
             label = { Text("Groups") },
             icon = { Icon(Icons.Default.Face, contentDescription = "Groups") }

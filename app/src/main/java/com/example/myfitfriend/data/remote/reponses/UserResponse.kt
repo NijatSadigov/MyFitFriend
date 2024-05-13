@@ -5,5 +5,7 @@ data class UserResponse(
 //    val email: String,
     val weight:Double,
     val height:Double,
-    val activityLevel:Int
+    val activityLevel:Int,
+    val sex: Boolean,
+    val age:Int
 )

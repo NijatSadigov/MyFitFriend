@@ -8,6 +8,7 @@ data class User(
     val weight:Double,
     val height:Double,
     val activityLevel:Int,
-    val userId: Int  // Assuming an auto-increment ID is used
-
+    val userId: Int,  // Assuming an auto-increment ID is used
+    val sex: Boolean,
+    val age:Int
 )

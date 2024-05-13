@@ -9,6 +9,7 @@ import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.Workout
 import com.example.myfitfriend.domain.use_case.Workout.DeleteWorkoutByIdUseCase
 import com.example.myfitfriend.domain.use_case.Workout.GetWorkoutsUseCase
+import com.example.myfitfriend.domain.use_case.groups.delete.DeleteDietGroupUseCase
 import com.example.myfitfriend.domain.use_case.groups.mainscreen.GetGroupsUseCase
 import com.example.myfitfriend.domain.use_case.users.GetUserDetailsByIdUseCase
 import com.example.myfitfriend.domain.use_case.users.ProfileUserCase
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GroupsScreenViewModel @Inject constructor(
     private val getGroupsUseCase: GetGroupsUseCase,
-    private val getUserDetailsByIdUseCase: GetUserDetailsByIdUseCase
+    private val getUserDetailsByIdUseCase: GetUserDetailsByIdUseCase,
+    private val deleteDietGroupUseCase: DeleteDietGroupUseCase
 ) : ViewModel(){
     private val _dietGroups = mutableStateOf<List<DietGroup>>(emptyList())
     val dietGroups : State<List <DietGroup>> = _dietGroups
@@ -60,6 +62,7 @@ class GroupsScreenViewModel @Inject constructor(
                             result.data.map {
                                 getUserName(it.groupOwnerId)
                             }
+                            println(dietGroups.value)
 
 
 
@@ -109,5 +112,34 @@ class GroupsScreenViewModel @Inject constructor(
 
 
     }
+    private val _deletionSuccess = mutableStateOf(false)
+    val deletionSuccess: State<Boolean> = _deletionSuccess
+    fun deleteGroup(groupId:Int){
+            viewModelScope.launch {
+                deleteDietGroupUseCase.invoke(groupId).onEach {
+                    result->
+                    when(result){
+                        is Resources.Error -> {
+                            _deletionSuccess.value = false
+                        }
+                        is Resources.Loading ->{}
+                        is Resources.Success -> {
+                            println("delete gruop ${result.data}")
+                            if (result.data==200){
+                                _deletionSuccess.value = true
+                                // Refresh the group list
+                                getGroups()
+                            }
 
+                        }
+                    }
+
+
+                }.launchIn(viewModelScope)
+            }
+    }
+    fun resetDeletionSuccessState() {
+        _deletionSuccess.value = false
+    }
 }
+
