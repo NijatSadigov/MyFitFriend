@@ -112,6 +112,7 @@ class EditDietaryLogScreenViewModel @Inject constructor(
                             _dietaryLogId.value=result.data.dietaryLogId
                             onScreenStart()
                             onAmountOfFoodChange(_amountOfFood.value)
+                            onPartOfDayChange(result.data.partOfDay)
                         }
 
                     }

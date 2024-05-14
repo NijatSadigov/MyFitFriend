@@ -3,9 +3,11 @@ package com.example.myfitfriend.data.remote
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.remote.reponses.AddFriendRequestInfo
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
+import com.example.myfitfriend.data.remote.reponses.GroupDietaryLogsItem
 import com.example.myfitfriend.data.remote.reponses.User
 import com.example.myfitfriend.data.remote.reponses.UserResponse
 import com.example.myfitfriend.data.remote.reponses.Workout
@@ -176,6 +178,24 @@ interface MyFitFriendAPI {
 
         ):Response<Unit>
 
+    @POST("/dietgroup/members")
+   suspend fun inviteUser(
+        @Query ("wantedUserId")wantedUserId:Int,
+        @Query("groupId")groupId:Int
+    ):Response<Unit>
+    @POST("/grouprequests")
+    suspend fun answerInvite(
+        @Query("answer")answer:Boolean,
+        @Query("requestId")requestId:Int
+    ):Response<Unit>
+    @GET("/grouprequests")
+    suspend fun getInvites(
 
+    ):List<AddFriendRequestInfo>
+    @GET("/dietgroup")
+    suspend fun getDietGroupLogs(
+        @Query("groupId")groupId:Int,
+        @Query("doYouWantGroupDietaryLogItem")doYouWantGroupDietaryLogItem:Boolean
 
+    ):List<GroupDietaryLogsItem>
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -39,8 +40,8 @@ fun GroupsScreen(
             TopAppBar(
                 title = { Text("My Fit Friend") },
                 actions = {
-                    TextButton(onClick = { navController.navigate(Screen.ProfileScreen.route) }) {
-                        Text("Profile", color = MaterialTheme.colors.onPrimary)
+                    TextButton(onClick = { navController.navigate(Screen.InvitesScreen.route) }) {
+                        Text("Invites", color = MaterialTheme.colors.onPrimary)
                     }
                 }
             )
@@ -86,24 +87,30 @@ fun GroupsBottomBar(navController: NavController) {
         )
     }
 }
-
 @Composable
-fun GroupsList(groups: List<DietGroup>, ownerName: String, navController: NavController, viewModel: GroupsScreenViewModel, modifier: Modifier = Modifier) {
+fun GroupsList(
+    groups: List<DietGroup>,
+    ownerNames: List<String>, // List of owner names
+    navController: NavController,
+    viewModel: GroupsScreenViewModel,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(modifier = modifier.padding(horizontal = 8.dp)) {
-        items(groups) { group ->
+        itemsIndexed(groups) { index, group -> // Use itemsIndexed to get both index and item
+            val ownerName = ownerNames.getOrNull(index) ?: "Unknown Owner" // Default to "Unknown Owner" if null
             GroupCard(
                 group = group,
                 ownerName = ownerName,
                 navController = navController,
                 viewModel = viewModel,
                 onDeleteConfirmed = {
-                   // println("groupId: ${group.groupId}")
                     viewModel.deleteGroup(group.groupId)
                 }
             )
         }
     }
 }
+
 @Composable
 fun GroupCard(group: DietGroup, ownerName: String, navController: NavController, viewModel: GroupsScreenViewModel, onDeleteConfirmed: (Int) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
@@ -118,6 +125,7 @@ fun GroupCard(group: DietGroup, ownerName: String, navController: NavController,
                 Button(onClick = {
                     onDeleteConfirmed(group.groupId)
                     showDialog = false
+                    if(viewModel.deletionSuccess.value)
                     showSnackbar = true
                 }) {
                     Text("Confirm")

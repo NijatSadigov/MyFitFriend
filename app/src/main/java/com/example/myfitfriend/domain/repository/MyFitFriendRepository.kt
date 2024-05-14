@@ -3,9 +3,11 @@ package com.example.myfitfriend.domain.repository
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.remote.reponses.AddFriendRequestInfo
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
+import com.example.myfitfriend.data.remote.reponses.GroupDietaryLogsItem
 import com.example.myfitfriend.data.remote.reponses.User
 import com.example.myfitfriend.data.remote.reponses.UserResponse
 import com.example.myfitfriend.data.remote.reponses.Workout
@@ -14,6 +16,9 @@ import com.example.myfitfriend.data.remote.requests.UserEditRequest
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
 import com.example.myfitfriend.data.remote.requests.UserRegisterRequest
 import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface MyFitFriendRepository {
 
@@ -60,4 +65,23 @@ interface MyFitFriendRepository {
     suspend fun editDietGroup(groupId: Int,groupName: String):Int
     suspend fun kickUser(userId: Int,groupId: Int):Int
     suspend fun getDietaryLogOfUserByUserIdForGroup(wantedUserId:Int):List<DietaryLogResponse>
+//
+suspend fun inviteUser(
+    wantedUserId:Int,
+    groupId:Int
+):Int
+    suspend fun answerInvite(
+       answer:Boolean,
+        requestId:Int
+    ):Int
+    suspend fun getInvites(
+
+    ):List<AddFriendRequestInfo>
+
+    suspend fun getDietGroupLogs(
+        groupId: Int,
+        doYouWantGroupDietaryLogItem:Boolean
+
+    ):List<GroupDietaryLogsItem>
+
 }

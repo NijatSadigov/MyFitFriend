@@ -4,9 +4,11 @@ import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
 import com.example.myfitfriend.data.remote.MyFitFriendAPI
+import com.example.myfitfriend.data.remote.reponses.AddFriendRequestInfo
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
+import com.example.myfitfriend.data.remote.reponses.GroupDietaryLogsItem
 import com.example.myfitfriend.data.remote.reponses.User
 import com.example.myfitfriend.data.remote.reponses.UserResponse
 import com.example.myfitfriend.data.remote.reponses.Workout
@@ -156,4 +158,24 @@ return api.deleteExerciseFromWorkout(exerciseId).code()    }
     override suspend fun getDietaryLogOfUserByUserIdForGroup(wantedUserId: Int): List<DietaryLogResponse> {
         return api.getDietaryLogOfUserByUserIdForGroup(wantedUserId)
     }
+
+    override suspend fun getInvites(): List<AddFriendRequestInfo> {
+        return api.getInvites()
+    }
+
+    override suspend fun answerInvite(answer: Boolean, requestId: Int): Int {
+      return  api.answerInvite(answer,requestId).code()
+    }
+
+    override suspend fun inviteUser(wantedUserId: Int, groupId: Int): Int {
+        return api.inviteUser(wantedUserId,groupId).code()
+    }
+
+    override suspend fun getDietGroupLogs(
+        groupId: Int,
+        doYouWantGroupDietaryLogItem: Boolean
+    ): List<GroupDietaryLogsItem> {
+        return api.getDietGroupLogs(groupId=groupId,doYouWantGroupDietaryLogItem=doYouWantGroupDietaryLogItem)
+    }
+
 }

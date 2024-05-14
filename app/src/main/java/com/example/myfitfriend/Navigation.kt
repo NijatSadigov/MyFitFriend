@@ -16,6 +16,7 @@ import com.example.myfitfriend.presentation.dietarylogs.adddietarylog.AddDietary
 import com.example.myfitfriend.presentation.dietarylogs.editdietarylog.EditDietaryLogScreen
 import com.example.myfitfriend.presentation.dietarylogsperpartofday.SpecificPartOfDayDietaryLogsScreen
 import com.example.myfitfriend.presentation.groups.editgroup.EditGroupScreen
+import com.example.myfitfriend.presentation.groups.invites.InvitesScreen
 import com.example.myfitfriend.presentation.groups.specificgroup.SpecificGroupScreen
 import com.example.myfitfriend.presentation.workouts.WorkoutScreen
 import com.example.myfitfriend.presentation.workouts.addworkout.CreateWorkoutScreen
@@ -156,6 +157,9 @@ fun Navigation() {
         {
             navBackStackEntry ->
             SpecificGroupScreen(navController = navController, groupId =navBackStackEntry.arguments?.getString("groupId")!!.toIntOrNull() ?: -1 )
+        }
+        composable(Screen.InvitesScreen.route){
+            InvitesScreen(navController = navController)
         }
 
 //        // object GroupsScreen:Screen("groups")  //shows users already joined groups , and on the top of page  a button to move to addgroup screen and invites button which also shows current number of invites and when u click it it should go invitesScreen

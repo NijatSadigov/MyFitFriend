@@ -30,8 +30,7 @@ sealed class Screen(val route:String) {
 
     object CreateGroupScreen:Screen("create_group") //
     object EditGroupScreen:Screen("editGroup") //avaiable for only owners
-    object InviteUserToGroupScreen:Screen("invite_user_to_group")
-    object CurrentInvitesScreen:Screen("invites_of_user")
+    object InvitesScreen:Screen("invites_of_user")
 
 
 

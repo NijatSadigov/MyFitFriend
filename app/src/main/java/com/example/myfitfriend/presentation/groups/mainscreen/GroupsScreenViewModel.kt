@@ -36,8 +36,8 @@ class GroupsScreenViewModel @Inject constructor(
     val groupName: State<List<String>> = _groupName
 
 
-    private val _groupOwnerName= mutableStateOf("")
-    val groupOwnerName:State<String> =_groupOwnerName
+    private val _groupOwnerName= mutableStateOf<List<String>>(emptyList())
+    val groupOwnerName:State<List<String>> =_groupOwnerName
 
     fun getGroups(){
         viewModelScope.launch {
@@ -59,9 +59,9 @@ class GroupsScreenViewModel @Inject constructor(
                             _groupName.value = groupNames
 
 
-                            result.data.map {
-                                getUserName(it.groupOwnerId)
-                            }
+
+                                getUserName( result.data.map { it.groupOwnerId })
+
                             println(dietGroups.value)
 
 
@@ -82,35 +82,24 @@ class GroupsScreenViewModel @Inject constructor(
 
 
     }
-    fun getUserName(ownerId:Int){
-
+    fun getUserName(ownerIds:List<Int>){
         viewModelScope.launch {
-
-            getUserDetailsByIdUseCase.invoke(ownerId).onEach {
-                result->
-                when(result){
-                    is Resources.Error -> {
-                        println("Error: ${result.data} , ${result.message}")
-
+            ownerIds.forEach {
+                ownerId->
+                getUserDetailsByIdUseCase.invoke(ownerId).onEach { result ->
+                    when (result) {
+                        is Resources.Error -> {
+                            println("Error: ${result.data} , ${result.message}")
+                        }
+                        is Resources.Loading -> {}
+                        is Resources.Success -> {
+                            _groupOwnerName.value = groupOwnerName.value+result.data!!.username
+                            println("viewmodel : ${result.data!!.username}")
+                        }
                     }
-                    is Resources.Loading -> {
-
-                    }
-                    is Resources.Success -> {
-                        println("viewmodel : ${result.data!!.username}")
-                        _groupOwnerName.value=result.data!!.username
-                    }
-                }
-            }.launchIn(viewModelScope)
-
-
-
+                }.launchIn(viewModelScope)
+            }
         }
-
-
-
-
-
     }
     private val _deletionSuccess = mutableStateOf(false)
     val deletionSuccess: State<Boolean> = _deletionSuccess
@@ -129,6 +118,10 @@ class GroupsScreenViewModel @Inject constructor(
                                 _deletionSuccess.value = true
                                 // Refresh the group list
                                 getGroups()
+                            }
+                            else {
+                                _deletionSuccess.value = false
+
                             }
 
                         }
