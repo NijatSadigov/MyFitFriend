@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,8 +33,8 @@ fun SpecificGroupScreen(
     LaunchedEffect(true) {
         viewModel.getGroupMembersLogs(groupId)
         viewModel.getGroup(groupId)
-        viewModel.getUserId()
-        viewModel.checkAreUOwner(ownerId = viewModel.groupOwnerId.value, userId = viewModel.userId.value)
+
+
     }
 
 
@@ -64,7 +65,7 @@ fun SpecificGroupScreen(
                 )
                 BottomNavigationItem(
                     selected = true,
-                    onClick = { /* Current Screen */ },
+                    onClick = { navController.navigate(Screen.GroupsScreen.route) },
                     label = { Text("Groups") },
                     icon = { Icon(Icons.Default.Face, contentDescription = "Groups Page") }
                 )
@@ -142,11 +143,14 @@ fun MemberList(viewModel: SpecificGroupScreenViewModel, navController: NavContro
 
 @Composable
 fun MemberCard(member: GroupDietaryLogsItem, viewModel: SpecificGroupScreenViewModel, navController: NavController,groupId:Int) {
+    val isCurrentUser = member.userId == viewModel.userId.value
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = 4.dp
+        elevation = 4.dp,
+        backgroundColor = if (isCurrentUser) Color.Green else Color.White
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("${member.userName}: ${member.totalCalories}/${member.maxCalories} kcal", style = MaterialTheme.typography.h6)
@@ -155,8 +159,7 @@ fun MemberCard(member: GroupDietaryLogsItem, viewModel: SpecificGroupScreenViewM
             Text("Fat: ${member.totalFat}g")
             if (viewModel.areUOwner.value) {
                 Button(onClick = {
-                   viewModel.kickUser(member.userId, groupId = groupId)
-
+                    viewModel.kickUser(member.userId, groupId = groupId)
                 }) {
                     Text("Kick")
                 }

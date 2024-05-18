@@ -38,7 +38,8 @@ class GroupsScreenViewModel @Inject constructor(
 
     private val _groupOwnerName= mutableStateOf<List<String>>(emptyList())
     val groupOwnerName:State<List<String>> =_groupOwnerName
-
+    private val _memberIds = mutableStateOf<List<Int>>(emptyList())
+    val memberIds: State<List<Int>> =_memberIds
     fun getGroups(){
         viewModelScope.launch {
             println("Launcs")
@@ -60,8 +61,6 @@ class GroupsScreenViewModel @Inject constructor(
 
 
 
-                                getUserName( result.data.map { it.groupOwnerId })
-
                             println(dietGroups.value)
 
 
@@ -82,9 +81,10 @@ class GroupsScreenViewModel @Inject constructor(
 
 
     }
-    fun getUserName(ownerIds:List<Int>){
+    fun getUserName(){
         viewModelScope.launch {
-            ownerIds.forEach {
+
+            memberIds.value.forEach {
                 ownerId->
                 getUserDetailsByIdUseCase.invoke(ownerId).onEach { result ->
                     when (result) {
@@ -94,7 +94,7 @@ class GroupsScreenViewModel @Inject constructor(
                         is Resources.Loading -> {}
                         is Resources.Success -> {
                             _groupOwnerName.value = groupOwnerName.value+result.data!!.username
-                            println("viewmodel : ${result.data!!.username}")
+                            println("viewmodel : ${result.data.username}")
                         }
                     }
                 }.launchIn(viewModelScope)

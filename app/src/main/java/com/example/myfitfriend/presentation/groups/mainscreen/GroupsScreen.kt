@@ -22,14 +22,12 @@ import androidx.navigation.NavController
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.util.Screen
 import kotlinx.coroutines.delay
-
 @Composable
 fun GroupsScreen(
     navController: NavController,
     viewModel: GroupsScreenViewModel = hiltViewModel()
 ) {
     val dietGroups = viewModel.dietGroups.value
-    val groupOwnerName = viewModel.groupOwnerName.value
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getGroups()
@@ -59,7 +57,7 @@ fun GroupsScreen(
             GroupsBottomBar(navController)
         }
     ) { innerPadding ->
-        GroupsList(dietGroups, groupOwnerName, navController, viewModel, Modifier.padding(innerPadding))
+        GroupsList(dietGroups, navController, viewModel, Modifier.padding(innerPadding))
     }
 }
 
@@ -81,26 +79,24 @@ fun GroupsBottomBar(navController: NavController) {
         )
         BottomNavigationItem(
             selected = true,
-            onClick = { /* Current Screen */ },
+            onClick = {navController.navigate(Screen.GroupsScreen.route)},
             label = { Text("Groups") },
             icon = { Icon(Icons.Default.Face, contentDescription = "Groups Page") }
         )
     }
 }
+
 @Composable
 fun GroupsList(
     groups: List<DietGroup>,
-    ownerNames: List<String>, // List of owner names
     navController: NavController,
     viewModel: GroupsScreenViewModel,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier.padding(horizontal = 8.dp)) {
-        itemsIndexed(groups) { index, group -> // Use itemsIndexed to get both index and item
-            val ownerName = ownerNames.getOrNull(index) ?: "Unknown Owner" // Default to "Unknown Owner" if null
+        items(groups) { group ->
             GroupCard(
                 group = group,
-                ownerName = ownerName,
                 navController = navController,
                 viewModel = viewModel,
                 onDeleteConfirmed = {
@@ -112,7 +108,7 @@ fun GroupsList(
 }
 
 @Composable
-fun GroupCard(group: DietGroup, ownerName: String, navController: NavController, viewModel: GroupsScreenViewModel, onDeleteConfirmed: (Int) -> Unit) {
+fun GroupCard(group: DietGroup, navController: NavController, viewModel: GroupsScreenViewModel, onDeleteConfirmed: (Int) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     var showSnackbar by remember { mutableStateOf(false) }
 
@@ -126,7 +122,7 @@ fun GroupCard(group: DietGroup, ownerName: String, navController: NavController,
                     onDeleteConfirmed(group.groupId)
                     showDialog = false
                     if(viewModel.deletionSuccess.value)
-                    showSnackbar = true
+                        showSnackbar = true
                 }) {
                     Text("Confirm")
                 }
@@ -141,7 +137,7 @@ fun GroupCard(group: DietGroup, ownerName: String, navController: NavController,
 
     if (showSnackbar) {
         LaunchedEffect(key1 = Unit) {
-            delay(3000) // Show the snackbar for 3 seconds
+            delay(1500) // Show the snackbar for 3 seconds
             showSnackbar = false
         }
         Snackbar {
@@ -163,8 +159,6 @@ fun GroupCard(group: DietGroup, ownerName: String, navController: NavController,
         ) {
             Column {
                 Text(group.groupName, style = MaterialTheme.typography.h6)
-                Spacer(Modifier.height(4.dp))
-                Text("Owner: $ownerName", style = MaterialTheme.typography.body1)
             }
             Row {
                 IconButton(onClick = { navController.navigate("${Screen.EditGroupScreen.route}?groupId=${group.groupId}") }) {

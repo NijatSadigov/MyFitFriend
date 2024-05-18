@@ -16,52 +16,54 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.annotation.Signed
 import javax.inject.Singleton
-
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
     @Singleton
     @Provides
-    fun provideBasicAuthInterceptor()=BasicAuthInterceptor()
+    fun provideBasicAuthInterceptor() = BasicAuthInterceptor()
 
     @Singleton
     @Provides
     fun provideMyFitFriendApi(
         basicAuthInterceptor: BasicAuthInterceptor
+    ): MyFitFriendAPI {
+        val logging = HttpLoggingInterceptor()
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    ):MyFitFriendAPI{
-        val client = OkHttpClient.Builder().addInterceptor(basicAuthInterceptor).build()
-        return Retrofit.Builder().
-        baseUrl(BASE_URL).
-        addConverterFactory(GsonConverterFactory.create()).
-        client(client).build().create(MyFitFriendAPI::class.java)
+        val client = OkHttpClient.Builder()
+            .addInterceptor(basicAuthInterceptor)
+            .addInterceptor(logging)
+            .build()
 
-
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+            .create(MyFitFriendAPI::class.java)
     }
-    @Singleton
-    @Provides
-    fun provideMyFitFriendRepository(api: MyFitFriendAPI):MyFitFriendRepository=MyFitFriendRepositoryIMPL(api)
 
     @Singleton
     @Provides
-    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context):SharedPreferences{
-        val masterKey= MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+    fun provideMyFitFriendRepository(api: MyFitFriendAPI): MyFitFriendRepository = MyFitFriendRepositoryIMPL(api)
+
+    @Singleton
+    @Provides
+    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
         return EncryptedSharedPreferences.create(
             context,
             ENCRYPTED_SHARED_PREF_NAME,
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-
-            )
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
-
-
-
-
-
 }

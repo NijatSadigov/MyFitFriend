@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myfitfriend.presentation.addeditdietarylog.AddEditDietaryLogScreen
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsScreen
+import com.example.myfitfriend.presentation.dietarylogs.Foods.BarcodeScannerScreen
 import com.example.myfitfriend.presentation.groups.addgroup.CreateGroupScreen
 import com.example.myfitfriend.presentation.groups.mainscreen.GroupsScreen
 import com.example.myfitfriend.presentation.login.LoginScreen
@@ -97,6 +98,9 @@ fun Navigation() {
         composable(Screen.ShowFoodsScreen.route){
             ShowFoodsScreen(navController=navController)
 
+        }
+        composable(Screen.BarcodeScannerScreen.route){
+            BarcodeScannerScreen(navController=navController)
         }
         composable(Screen.AddDietaryLogScreen.route+"?foodId={foodId}"){
             navBackStackEntry ->

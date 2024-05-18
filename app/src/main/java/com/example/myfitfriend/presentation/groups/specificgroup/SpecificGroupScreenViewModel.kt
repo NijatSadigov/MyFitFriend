@@ -34,7 +34,9 @@ class SpecificGroupScreenViewModel @Inject constructor(
     private val getDietGroupByIdUseCase: GetDietGroupByIdUseCase,
     private val kickUserUseCase: KickUserUseCase,
     private val inviteUserUseCase: InviteUserUseCase,
-    private val getGroupLogsUseCase: GetGroupLogsUseCase
+    private val getGroupLogsUseCase: GetGroupLogsUseCase,
+    private val getUserDetailsByIdUseCase: GetUserDetailsByIdUseCase
+
 ) : ViewModel(){
 
     private val _groupName = mutableStateOf("")
@@ -70,7 +72,10 @@ class SpecificGroupScreenViewModel @Inject constructor(
                         println("getGroup ${r.data}")
 
                         if(r.data!=null){
+                            _groupOwnerName.value = r.data.find { it.userId == groupOwnerId.value }!!.userName
+
                             _memberLogs.value=r.data
+
                         }
                     }
                 }
@@ -78,6 +83,24 @@ class SpecificGroupScreenViewModel @Inject constructor(
 
             // getGroupMembersMaxValuesAndUserNames()
 
+        }
+    }
+    fun getOwnerName(){
+        viewModelScope.launch {
+            getUserDetailsByIdUseCase.invoke(groupOwnerId.value).onEach{
+               r->
+                when(r){
+                    is Resources.Error ->{
+                        println("err at getOwnerName :${r.message} : ${r.data}")
+                    }
+                    is Resources.Loading -> {}
+                    is Resources.Success -> {
+                        _groupOwnerName.value=r.data?.username ?:""
+                    }
+                }
+
+            }
+                .launchIn(viewModelScope)
         }
     }
 
@@ -95,6 +118,7 @@ class SpecificGroupScreenViewModel @Inject constructor(
                             println("getGroup")
                             _groupName.value=r.data.groupName
                             _groupOwnerId.value=r.data.groupOwnerId
+                            getUserId()
 
                         }
                     }
@@ -174,6 +198,8 @@ class SpecificGroupScreenViewModel @Inject constructor(
                         if(result.data!=null) {
                             _userId.value = result.data.userId
                             println("user Id ${userId.value}")
+                            checkAreUOwner(ownerId = groupOwnerId.value, userId = userId.value)
+
                         }
                     }
                 }
@@ -191,7 +217,7 @@ class SpecificGroupScreenViewModel @Inject constructor(
     private val _areUOwner = mutableStateOf(false)
     val areUOwner: State<Boolean> =_areUOwner
     fun checkAreUOwner(ownerId:Int, userId: Int){
-       // println("ownerId:${groupOwnerId.value} : userId:${userId.value}")
+        println("ownerId:$ownerId : userId:$userId")
         _areUOwner.value= ownerId==userId
     }
 }

@@ -11,7 +11,7 @@ sealed class Screen(val route:String) {
     object AddDietaryLogScreen:Screen("add_dietary_log_food")
     object SpecificPartOfDayDietaryLogScreen:Screen("specific_part_of_day_dietary_log_screen")
     object EditDietaryLogScreen:Screen("add_dietary_log_food")
-
+    object BarcodeScannerScreen:Screen("barcode_scanner")
 
     //workouts
     object WorkoutScreen:Screen("workouts")

@@ -21,6 +21,7 @@ import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.util.Screen
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsBottomBar
 
+import androidx.compose.material.icons.filled.ShoppingCart
 
 @Composable
 fun ShowFoodsScreen(navController: NavController, viewModel: ShowFoodsScreenViewModel = hiltViewModel()) {
@@ -46,12 +47,18 @@ fun ShowFoodsScreen(navController: NavController, viewModel: ShowFoodsScreenView
                 }
             )
         },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navController.navigate(Screen.BarcodeScannerScreen.route) }) {
+                Icon(Icons.Default.ShoppingCart, contentDescription = "Scan Barcode")
+            }
+        },
         bottomBar = { DietaryLogsBottomBar(navController) }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).padding(8.dp)) {
             SearchBar(searchText = viewModel.searchBar.value, onSearchChanged = viewModel::onSearchBarChange)
             Spacer(Modifier.height(10.dp))
             FoodsList(navController, viewModel.filteredFoods.value)
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
@@ -76,6 +83,7 @@ fun SearchBar(searchText: String, onSearchChanged: (String) -> Unit) {
         }
     )
 }
+
 @Composable
 fun FoodsList(navController: NavController, foods: List<FoodResponse>) {
     if (foods.isEmpty()) {
@@ -86,7 +94,7 @@ fun FoodsList(navController: NavController, foods: List<FoodResponse>) {
                 val food = foods[index]
                 FoodCard(food) {
                     // Action on food card click
-                        println("foodid from showfoods ${food.foodId}")
+                    println("foodid from showfoods ${food.foodId}")
                     navController.navigate(Screen.AddDietaryLogScreen.route + "?foodId=${food.foodId}")
                 }
             }
