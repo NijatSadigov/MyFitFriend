@@ -1,5 +1,6 @@
 package com.example.myfitfriend.presentation.groups.specificgroup
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,13 +32,19 @@ fun SpecificGroupScreen(
     viewModel: SpecificGroupScreenViewModel = hiltViewModel(),
     groupId: Int
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(true) {
         viewModel.getGroupMembersLogs(groupId)
         viewModel.getGroup(groupId)
-
-
     }
 
+    LaunchedEffect(viewModel.showToast.value) {
+        viewModel.showToast.value?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -72,7 +80,7 @@ fun SpecificGroupScreen(
             }
         }
     ) { innerPadding ->
-        GroupContent(viewModel, Modifier.padding(innerPadding), navController,groupId)
+        GroupContent(viewModel, Modifier.padding(innerPadding), navController, groupId)
     }
 }
 
@@ -97,52 +105,50 @@ fun GroupContent(viewModel: SpecificGroupScreenViewModel, modifier: Modifier, na
         MemberList(viewModel, navController, groupId)
     }
 }
+
 @Composable
 fun InviteMemberForm(viewModel: SpecificGroupScreenViewModel, groupId: Int) {
-    var userIdText by remember { mutableStateOf("") }
+    var userEmailText by remember { mutableStateOf("") }
 
     // A function to validate and set the userIdText
     fun updateUserIdText(input: String) {
-        if (input.all { char -> char.isDigit() } || input.isEmpty()) {
-            userIdText = input
-        }
+
+            userEmailText = input
+
     }
 
     Column {
         TextField(
-            value = userIdText,
+            value = userEmailText,
             onValueChange = { updateUserIdText(it) },
-            label = { Text("Enter user ID to invite") },
+            label = { Text("Enter user email to invite") },
             modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true  // Ensures the TextField doesn't wrap to a new line
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = {
-                // Convert the text to an integer and call the invite method
-                viewModel.inviteMemberById(userIdText.toInt(), groupId)
+                viewModel.inviteMemberByEmail(userEmailText, groupId)
             },
             modifier = Modifier.align(Alignment.End),
-            enabled = userIdText.isNotEmpty()  // Ensure that the button is only clickable if the text is not empty
+            enabled = userEmailText.isNotEmpty()  // Ensure that the button is only clickable if the text is not empty
         ) {
             Text("Invite")
         }
     }
 }
 
-
 @Composable
-fun MemberList(viewModel: SpecificGroupScreenViewModel, navController: NavController,groupId:Int) {
+fun MemberList(viewModel: SpecificGroupScreenViewModel, navController: NavController, groupId: Int) {
     LazyColumn {
         items(viewModel.memberLogs.value) { member ->
-            MemberCard(member, viewModel, navController,groupId)
+            MemberCard(member, viewModel, navController, groupId)
         }
     }
 }
 
 @Composable
-fun MemberCard(member: GroupDietaryLogsItem, viewModel: SpecificGroupScreenViewModel, navController: NavController,groupId:Int) {
+fun MemberCard(member: GroupDietaryLogsItem, viewModel: SpecificGroupScreenViewModel, navController: NavController, groupId: Int) {
     val isCurrentUser = member.userId == viewModel.userId.value
 
     Card(
@@ -153,11 +159,11 @@ fun MemberCard(member: GroupDietaryLogsItem, viewModel: SpecificGroupScreenViewM
         backgroundColor = if (isCurrentUser) Color.Green else Color.White
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("${member.userName}: ${member.totalCalories}/${member.maxCalories} kcal", style = MaterialTheme.typography.h6)
-            Text("Protein: ${member.totalProtein}g")
-            Text("Carb: ${member.totalCarb}g")
-            Text("Fat: ${member.totalFat}g")
-            if (viewModel.areUOwner.value) {
+            Text("${member.userName}: ${member.totalCalories.toInt()}/${member.maxCalories.toInt()} kcal", style = MaterialTheme.typography.h6)
+            Text("Protein: ${member.totalProtein.toInt()}g")
+            Text("Carb: ${member.totalCarb.toInt()}g")
+            Text("Fat: ${member.totalFat.toInt()}g")
+            if (viewModel.areUOwner.value && !isCurrentUser) {
                 Button(onClick = {
                     viewModel.kickUser(member.userId, groupId = groupId)
                 }) {

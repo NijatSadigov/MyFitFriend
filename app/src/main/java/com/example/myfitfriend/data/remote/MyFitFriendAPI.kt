@@ -180,7 +180,7 @@ interface MyFitFriendAPI {
 
     @POST("/dietgroup/members")
    suspend fun inviteUser(
-        @Query ("wantedUserId")wantedUserId:Int,
+        @Query ("wantedUserEmail")wantedUserEmail:String,
         @Query("groupId")groupId:Int
     ):Response<Unit>
     @POST("/grouprequests")

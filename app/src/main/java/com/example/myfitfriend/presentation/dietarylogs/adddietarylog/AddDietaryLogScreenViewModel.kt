@@ -121,7 +121,7 @@ class AddDietaryLogScreenViewModel @Inject constructor(
             insertDietaryLogCase(DietaryLogRequest(
                 amountOfFood = amountOfFood.value.toDouble(),
                 foodId = foodId,
-                partOfDay = partOfDay.value
+                partOfDay = partOfDay.value,
             )).onEach {
                 result->
                 when(result){

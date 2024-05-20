@@ -32,6 +32,7 @@ class DietaryLogsViewModel
     private val getFoodUseCase: GetFoodUseCase,
     private val getDietaryLogByDateAndPartOfDayUseCase: GetDietaryLogByDateAndPartOfDayUseCase
 ) : ViewModel(){
+
     private val _dietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
     val dietaryLogs: State<List<DietaryLogResponse>> =_dietaryLogs
 

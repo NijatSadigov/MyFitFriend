@@ -15,11 +15,11 @@ import javax.inject.Inject
 class InviteUserUseCase @Inject constructor(
     private val repository:MyFitFriendRepository
 ){
-operator fun invoke(wantedUserId:Int, groupId:Int):Flow<Resources<Int>> =flow{
+operator fun invoke(wantedUserEmail:String, groupId:Int):Flow<Resources<Int>> =flow{
 
 try {
         emit(Resources.Loading())
-       val response= repository.inviteUser(wantedUserId=wantedUserId,groupId=groupId)
+       val response= repository.inviteUser(wantedUserEmail=wantedUserEmail,groupId=groupId)
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){

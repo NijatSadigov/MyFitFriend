@@ -5,5 +5,5 @@ data class DietaryLogRequest(
 
     val partOfDay:Int, //1morning 2 lunch 3 dinner 4 breakfast
     val amountOfFood:Double,
-    val foodId:Int
+    val foodId:Int,
 )

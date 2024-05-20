@@ -32,6 +32,11 @@ class MyFitFriendRepositoryIMPL @Inject constructor(val api: MyFitFriendAPI) : M
         return api.register(userRegisterRequest).code()
     }
 
+
+    // get data  from local
+    // fetch
+
+
     override suspend fun updateUserDetails(userEditRequest: UserEditRequest): Int {
 
         return api.updateProfile(userEditRequest).code()
@@ -167,8 +172,8 @@ return api.deleteExerciseFromWorkout(exerciseId).code()    }
       return  api.answerInvite(answer,requestId).code()
     }
 
-    override suspend fun inviteUser(wantedUserId: Int, groupId: Int): Int {
-        return api.inviteUser(wantedUserId,groupId).code()
+    override suspend fun inviteUser(wantedUserEmail: String, groupId: Int): Int {
+        return api.inviteUser(wantedUserEmail=wantedUserEmail,groupId).code()
     }
 
     override suspend fun getDietGroupLogs(

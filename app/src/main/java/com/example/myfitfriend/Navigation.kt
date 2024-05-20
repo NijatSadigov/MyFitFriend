@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myfitfriend.presentation.addeditdietarylog.AddEditDietaryLogScreen
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsScreen
 import com.example.myfitfriend.presentation.dietarylogs.Foods.BarcodeScannerScreen
 import com.example.myfitfriend.presentation.groups.addgroup.CreateGroupScreen
@@ -78,22 +77,22 @@ fun Navigation() {
 //            navBackStackEntry ->
 //
 //        }
-        composable(Screen.AddEditDietaryLogScreen.route+"?dietaryLogId={dietaryLogId}" +
-                "&?foodItem={foodItem}" +
-                "&?amountOfFood={amountOfFood}" +
-                "&?foodId={foodId}" +
-                "&?partOfDay={partOfDay}"
-        )
-        {
-            navBackStackEntry ->
-            AddEditDietaryLogScreen(navController=navController,
-                dietaryLogId=  navBackStackEntry.arguments?.getInt("dietaryLogId"),
-                foodItem= navBackStackEntry.arguments?.getString("foodItem"),
-                amountOfFood=navBackStackEntry.arguments?.getDouble("amountOfFood"),
-                foodId= navBackStackEntry.arguments?.getInt("foodId"),
-                partOfDay= navBackStackEntry.arguments?.getInt("partOfDay"))
-
-        }
+//        composable(Screen.AddEditDietaryLogScreen.route+"?dietaryLogId={dietaryLogId}" +
+//                "&?foodItem={foodItem}" +
+//                "&?amountOfFood={amountOfFood}" +
+//                "&?foodId={foodId}" +
+//                "&?partOfDay={partOfDay}"
+//        )
+//        {
+//            navBackStackEntry ->
+//            AddEditDietaryLogScreen(navController=navController,
+//                dietaryLogId=  navBackStackEntry.arguments?.getInt("dietaryLogId"),
+//                foodItem= navBackStackEntry.arguments?.getString("foodItem"),
+//                amountOfFood=navBackStackEntry.arguments?.getDouble("amountOfFood"),
+//                foodId= navBackStackEntry.arguments?.getInt("foodId"),
+//                partOfDay= navBackStackEntry.arguments?.getInt("partOfDay"))
+//
+//        }
 
         composable(Screen.ShowFoodsScreen.route){
             ShowFoodsScreen(navController=navController)

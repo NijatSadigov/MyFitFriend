@@ -67,7 +67,7 @@ interface MyFitFriendRepository {
     suspend fun getDietaryLogOfUserByUserIdForGroup(wantedUserId:Int):List<DietaryLogResponse>
 //
 suspend fun inviteUser(
-    wantedUserId:Int,
+    wantedUserEmail:String,
     groupId:Int
 ):Int
     suspend fun answerInvite(

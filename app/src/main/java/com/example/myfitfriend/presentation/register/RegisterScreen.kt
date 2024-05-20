@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,9 +32,10 @@ import androidx.navigation.NavController
 import com.example.myfitfriend.util.Screen
 import kotlin.math.roundToInt
 
-
 @Composable
 fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = viewModel.isRegistered.value) {
         if (viewModel.isRegistered.value) {
             navController.navigateUp()
@@ -116,7 +118,9 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Button(
                     onClick = { viewModel.onSexChange(true) },
-                    modifier = Modifier.weight(1f).padding(4.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (viewModel.userSex.value) Color.Blue else Color.LightGray,
                         contentColor = Color.White
@@ -127,7 +131,9 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
                 }
                 Button(
                     onClick = { viewModel.onSexChange(false) },
-                    modifier = Modifier.weight(1f).padding(4.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (!viewModel.userSex.value) Color.Blue else Color.LightGray,
                         contentColor = Color.White
@@ -138,7 +144,10 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { viewModel.onRegister() }) {
+            Button(
+                onClick = { viewModel.onRegister(context) },
+                enabled = viewModel.isRegisterButtonEnabled.value
+            ) {
                 Text(text = "Register", fontSize = 24.sp)
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -148,8 +157,6 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel = 
         }
     }
 }
-
-
 
 
 

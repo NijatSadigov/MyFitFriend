@@ -156,8 +156,9 @@ class EditDietaryLogScreenViewModel @Inject constructor(
                 ,dietaryLogRequest = DietaryLogRequest(
                 amountOfFood = amountOfFood.value.toDouble(),
                 foodId = foodIdOfLog.value,
-                partOfDay = partOfDay.value
-            )).onEach {
+                partOfDay = partOfDay.value,
+
+                )).onEach {
                 result->
                 when(result){
                     is Resources.Error -> {
