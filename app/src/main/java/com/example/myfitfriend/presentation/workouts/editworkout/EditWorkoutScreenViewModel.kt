@@ -6,6 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.local.WorkoutEntity
+import com.example.myfitfriend.data.local.domain.use_case.workout.GetWorkoutByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.workout.UpdateWorkoutUseCaseLB
 import com.example.myfitfriend.domain.use_case.Workout.EditWorkoutUseCase
 import com.example.myfitfriend.domain.use_case.Workout.GetWorkoutByIdUseCase
 import com.example.myfitfriend.util.Resources
@@ -17,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditWorkoutScreenViewModel @Inject constructor(
-    private val getWorkoutByIdUseCase: GetWorkoutByIdUseCase,
-    private val editWorkoutUseCase: EditWorkoutUseCase
+    private val getWorkoutByIdUseCase: GetWorkoutByIdUseCaseLB,
+    private val editWorkoutUseCase: UpdateWorkoutUseCaseLB
 ) : ViewModel(){
     private val _editWorkoutTitle = mutableStateOf("")
     val editWorkoutTitle: State<String> = _editWorkoutTitle
@@ -26,6 +29,8 @@ class EditWorkoutScreenViewModel @Inject constructor(
     private val _editWorkoutDate = mutableStateOf("")
     val editWorkoutDate: State<String> = _editWorkoutDate
 
+    private val _currentWorkout= mutableStateOf<WorkoutEntity?>(null)
+    val currentWorkout :State<WorkoutEntity?> =_currentWorkout
 
     private val _editWorkoutDescription = mutableStateOf("")
     val editWorkoutDescription: State<String> = _editWorkoutDescription
@@ -57,6 +62,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
                         _editWorkoutTitle.value=result.data!!.title
                         _editWorkoutDescription.value=result.data.description
                         _editWorkoutDate.value=result.data.date
+                        _currentWorkout.value=result.data
                     }
                 }
             }.launchIn(viewModelScope)
@@ -66,7 +72,16 @@ class EditWorkoutScreenViewModel @Inject constructor(
     fun onEditWorkout(workoutId:Int) {
         viewModelScope.launch {
 
-            editWorkoutUseCase(workoutId = workoutId,WorkoutRequest(editWorkoutTitle.value,editWorkoutDescription.value)).onEach {
+            editWorkoutUseCase(
+                WorkoutEntity(
+                    title = editWorkoutTitle.value,
+                    description = editWorkoutDescription.value,
+                    lastEditDate = System.currentTimeMillis(),
+                    userId = currentWorkout.value?.userId?:0,
+                    date=currentWorkout.value?.date?:"",
+                    workoutId = workoutId
+                    )
+            ).onEach {
                     result->
                 when(result){
                     is Resources.Error -> {
@@ -78,7 +93,7 @@ class EditWorkoutScreenViewModel @Inject constructor(
 
                     }
                     is Resources.Success ->{
-                        if(result.data ==200){
+                        if(result.data !=null && result.data>0){
                             _workoutCreated.value=true
                         }
                     }

@@ -5,6 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myfitfriend.data.local.DeletedItemsEntity
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.asServerResponse
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.DeleteDietaryLogByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.GetDietaryLogsByDateAndIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.foods.GetFoodByIdUseCaseLB
 import com.example.myfitfriend.data.remote.reponses.DietaryLogFrameItem
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
@@ -14,7 +20,9 @@ import com.example.myfitfriend.domain.use_case.dietarylogs.GetFoodUseCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.InsertDietaryLogCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.ShowFoodsUseCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.UpdateDietaryLogUseCase
+import com.example.myfitfriend.domain.use_case.sync.delete.InsertDeletionTableUseCaseLB
 import com.example.myfitfriend.util.Resources
+import com.example.myfitfriend.util.SyncOperationsUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -27,13 +35,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpecificPartOfDayDietaryLogsScreenViewModel @Inject constructor(
-    private val getFoodUseCase: GetFoodUseCase,
-    private val getDietaryLogByDateAndPartOfDayUseCase: GetDietaryLogByDateAndPartOfDayUseCase,
-    private val deleteDietaryLogUseCase: DeleteDietaryLogUseCase
+    private val getFoodUseCase: GetFoodByIdUseCaseLB,
+    private val getDietaryLogByDateAndPartOfDayUseCase: GetDietaryLogsByDateAndIdUseCaseLB,
+    private val deleteDietaryByIdLogUseCaseLB: DeleteDietaryLogByIdUseCaseLB,
+    private val insertDeletionTableUseCaseLB: InsertDeletionTableUseCaseLB,
+
 ):ViewModel() {
 
-    private val _dietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
-    private val dietaryLogs: State<List<DietaryLogResponse>> =_dietaryLogs
+    private val _dietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
+    private val dietaryLogs: State<List<DietaryLogEntity>> =_dietaryLogs
 
 
     private val _totalCalories = mutableStateOf(0.0)
@@ -62,15 +72,19 @@ class SpecificPartOfDayDietaryLogsScreenViewModel @Inject constructor(
 
 
 
-    fun onDeleteDietaryLog(partOfDay: Int,dietaryLogId:Int){
+    fun onDeleteDietaryLog(partOfDay: Int,dietaryLogId:Int,isAdded:Boolean){
 viewModelScope.launch {
-    deleteDietaryLogUseCase.invoke(dietaryLogId).onEach {
+
+    deleteDietaryByIdLogUseCaseLB.invoke(dietaryLogId).onEach {
             result->
         when(result){
             is Resources.Error -> {}
             is Resources.Loading -> {}
             is Resources.Success -> {
-                if (result.data==200){
+                if (result.data==1){
+                    if(isAdded)
+                    insertDeletionEntity(dietaryLogId)
+
                     getDietaryLogs(partOfDay)
                 }
             }
@@ -78,6 +92,25 @@ viewModelScope.launch {
 
     }.launchIn(viewModelScope)
 }
+    }
+    private fun insertDeletionEntity(id:Int){
+        viewModelScope.launch {
+            insertDeletionTableUseCaseLB.invoke(DeletedItemsEntity(
+                typeOfItem =0,
+                deletedId =id
+            )
+            ).onEach {
+                r->
+                when(r){
+                    is Resources.Error -> {}
+                    is Resources.Loading -> {}
+                    is Resources.Success -> {
+
+                    }
+                }
+            } .launchIn(viewModelScope)
+        }
+
     }
 
 
@@ -94,10 +127,11 @@ viewModelScope.launch {
 
                     }
                     is Resources.Success -> {
+                        if(result.data!=null) {
+                            _dietaryLogs.value = result.data
 
-                            _dietaryLogs.value=result.data?: emptyList()
-
-                        calculateTotalMacrosAndGetLogsFrame()
+                            calculateTotalMacrosAndGetLogsFrame()
+                        }
                         println(dietaryLogsFrame.value)
                     }
                 }
@@ -140,10 +174,12 @@ viewModelScope.launch {
                                             cal = result.data.cal * log.amountOfFood/100,
                                             protein = result.data.protein * log.amountOfFood/100,
                                             carb = result.data.carb * log.amountOfFood/100,
-                                            foodId = result.data.foodId,
+                                            foodId = result.data.foodId.toString(),
                                             fat = result.data.fat * log.amountOfFood/100,
                                             qrCode = result.data.qrCode,
-                                            dietaryLogId = log.dietaryLogId
+                                            dietaryLogId = log.dietaryLogId,
+                                            isSync =log.isSync,
+                                            isAdded = log.isAdded
                                         )
                                     )
                                 }

@@ -1,25 +1,22 @@
 package com.example.myfitfriend.presentation.dietarylogs
 
-import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myfitfriend.connectivity.ConnectivityObserver
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.GetDietaryLogsByDateAndIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.GetDietaryLogsUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.foods.GetFoodByIdUseCaseLB
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
 import com.example.myfitfriend.domain.use_case.dietarylogs.GetDietaryLogByDateAndPartOfDayUseCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.GetDietaryLogsUseCase
-import com.example.myfitfriend.domain.use_case.dietarylogs.GetFoodUseCase
-import com.example.myfitfriend.util.Constants.BREAKFAST_TIME
-import com.example.myfitfriend.util.Constants.DINNER_TIME
 import javax.inject.Inject
-import com.example.myfitfriend.util.Constants.KEY_LOGGED_IN_EMAIL
-import com.example.myfitfriend.util.Constants.NO_EMAIL
-import com.example.myfitfriend.util.Constants.KEY_PASSWORD
-import com.example.myfitfriend.util.Constants.LUNCH_TIME
-import com.example.myfitfriend.util.Constants.NO_PASSWORD
-import com.example.myfitfriend.util.Constants.SNACK_TIME
 import com.example.myfitfriend.util.Resources
+import com.example.myfitfriend.util.SyncOperationsUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -28,25 +25,26 @@ import java.time.LocalDate
 @HiltViewModel
 class DietaryLogsViewModel
 @Inject constructor(
-    private val getDietaryLogsUseCase: GetDietaryLogsUseCase,
-    private val getFoodUseCase: GetFoodUseCase,
-    private val getDietaryLogByDateAndPartOfDayUseCase: GetDietaryLogByDateAndPartOfDayUseCase
+    private val getDietaryLogsUseCaseLB: GetDietaryLogsUseCaseLB,
+    private val getFoodByUseCaseLB: GetFoodByIdUseCaseLB,
+    private val getDietaryLogByDateAndPartOfDayUseCase: GetDietaryLogsByDateAndIdUseCaseLB,
+    private val syncOperationsUtil: SyncOperationsUtil
 ) : ViewModel(){
 
-    private val _dietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
-    val dietaryLogs: State<List<DietaryLogResponse>> =_dietaryLogs
+    private val _dietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
+    val dietaryLogs: State<List<DietaryLogEntity>> =_dietaryLogs
 
-    private val _breakfastDietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
-    val breakfastDietaryLogs: State<List<DietaryLogResponse>> = _breakfastDietaryLogs
+    private val _breakfastDietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
+    val breakfastDietaryLogs: State<List<DietaryLogEntity>> = _breakfastDietaryLogs
 
-    private val _lunchDietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
-    val lunchDietaryLogs: State<List<DietaryLogResponse>> = _lunchDietaryLogs
+    private val _lunchDietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
+    val lunchDietaryLogs: State<List<DietaryLogEntity>> = _lunchDietaryLogs
 
-    private val _dinnerDietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
-    val dinnerDietaryLogs: State<List<DietaryLogResponse>> = _dinnerDietaryLogs
+    private val _dinnerDietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
+    val dinnerDietaryLogs: State<List<DietaryLogEntity>> = _dinnerDietaryLogs
 
-    private val _snackDietaryLogs = mutableStateOf<List<DietaryLogResponse>>(emptyList())
-    val snackDietaryLogs: State<List<DietaryLogResponse>> = _snackDietaryLogs
+    private val _snackDietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
+    val snackDietaryLogs: State<List<DietaryLogEntity>> = _snackDietaryLogs
 
     private val _date = mutableStateOf(LocalDate.now().toString())
     val date : State<String> =_date
@@ -74,11 +72,38 @@ class DietaryLogsViewModel
     private val _totalSnackCalories = mutableStateOf(0.0)
     val totalSnackCalories: State<Double> = _totalSnackCalories
 
+    val _connectionStatus=  mutableStateOf(ConnectivityObserver.Status.Unavailable)
+    val connectionStatus:State<ConnectivityObserver.Status> =_connectionStatus
 
-    fun getDietaryLogs(){
-        viewModelScope.launch {
-            println("Launcs")
-            getDietaryLogsUseCase().onEach { result->
+    fun setConnectionState(state: ConnectivityObserver.Status) {
+        _connectionStatus.value = state
+        println("state $state")
+        if (connectionStatus.value == ConnectivityObserver.Status.Available) {
+            viewModelScope.launch {
+                // Start sync deletions and wait for it to complete
+                val job1=syncOperationsUtil.syncProfileDetails(viewModelScope)
+                job1.join()
+                val job2 =syncOperationsUtil.syncDeletions(scope = viewModelScope)
+                job2.join()
+                // Start sync dietary logs and sync workouts in parallel
+                val dietaryLogsJob = syncOperationsUtil.syncDietaryLogs(viewModelScope)
+                val workoutsJob = syncOperationsUtil.syncWorkouts(viewModelScope)
+
+                // Wait for both to complete
+                dietaryLogsJob.join()
+                workoutsJob.join()
+
+                // Fetch dietary logs after sync is complete
+                getDietaryLogs().join()
+            }
+        }
+    }
+
+
+    fun getDietaryLogs():Job{
+       return  viewModelScope.launch {
+            //println("Launcs")
+            getDietaryLogsUseCaseLB().onEach { result->
                 when(result){
                     is Resources.Error -> {
                     println("Error: ${result.data} , ${result.message}")
@@ -87,14 +112,14 @@ class DietaryLogsViewModel
 
                     }
                     is Resources.Success -> {
-
+                        //println("result data ${result.data}")
                         val todayLogs = result.data?.filter {
                             it.date == _date.value
                         } ?: emptyList()
-
+                      //  println("todaylogs $todayLogs")
                         _dietaryLogs.value = todayLogs
-                        println("success")
-                        println(_dietaryLogs.value)
+                        //println("success")
+                        //println(_dietaryLogs.value)
                         getDietaryLogsForPartyOfDay(0)
                         getDietaryLogsForPartyOfDay(1)
                         getDietaryLogsForPartyOfDay(2)
@@ -124,8 +149,8 @@ class DietaryLogsViewModel
 
                     }
                     is Resources.Success -> {
-                        println("getDietaryLogsForPartyOfDay")
-                        println(result.data)
+                        //println("getDietaryLogsForPartyOfDay")
+                        //println(result.data)
                         if(partOfDay==0)
                             _breakfastDietaryLogs.value=result.data?: emptyList()
                         else if(partOfDay==1){
@@ -158,7 +183,7 @@ class DietaryLogsViewModel
 
         viewModelScope.launch {
             dietaryLogs.value.forEach { log ->
-                getFoodUseCase(log.foodId).collect { result ->
+                getFoodByUseCaseLB(log.foodId).collect { result ->
                     when (result) {
                         is Resources.Error -> Unit
                         is Resources.Loading -> Unit
@@ -183,7 +208,7 @@ class DietaryLogsViewModel
             }
 
             breakfastDietaryLogs.value.forEach { log ->
-                getFoodUseCase(log.foodId).collect { result ->
+                getFoodByUseCaseLB(log.foodId).collect { result ->
                     when (result) {
                         is Resources.Error -> Unit
                         is Resources.Loading -> Unit
@@ -204,7 +229,7 @@ class DietaryLogsViewModel
             }
 
             lunchDietaryLogs.value.forEach { log ->
-                getFoodUseCase(log.foodId).collect { result ->
+                getFoodByUseCaseLB(log.foodId).collect { result ->
                     when (result) {
                         is Resources.Error -> Unit
                         is Resources.Loading -> Unit
@@ -225,7 +250,7 @@ class DietaryLogsViewModel
             }
 
             dinnerDietaryLogs.value.forEach { log ->
-                getFoodUseCase(log.foodId).collect { result ->
+                getFoodByUseCaseLB(log.foodId).collect { result ->
                     when (result) {
                         is Resources.Error -> Unit
                         is Resources.Loading -> Unit
@@ -247,7 +272,7 @@ class DietaryLogsViewModel
 
 
             snackDietaryLogs.value.forEach { log ->
-                getFoodUseCase(log.foodId).collect { result ->
+                getFoodByUseCaseLB(log.foodId).collect { result ->
                     when (result) {
                         is Resources.Error -> Unit
                         is Resources.Loading -> Unit
@@ -271,11 +296,6 @@ class DietaryLogsViewModel
         }
     }
 
-    private fun separateDietaryLogsByPartOfDay(partOfDay:Int,date:String, allLogs:List<DietaryLogResponse>):
-            List<DietaryLogResponse>{
-
-        return allLogs.filter { log -> log.partOfDay == partOfDay && log.date == date }
-    }
 
 
 

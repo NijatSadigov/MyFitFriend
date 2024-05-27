@@ -3,6 +3,10 @@ package com.example.myfitfriend.data.remote
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.ExerciseEntity
+import com.example.myfitfriend.data.local.UserEntity
+import com.example.myfitfriend.data.local.WorkoutEntity
 import com.example.myfitfriend.data.remote.reponses.AddFriendRequestInfo
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
@@ -51,7 +55,7 @@ interface MyFitFriendAPI {
 
     @POST("/dietarylog")
     suspend fun insertDietaryLog(
-        @Body dietaryLogRequest: DietaryLogRequest
+        @Body dietaryLogRequest: DietaryLogEntity
     ):Response<Unit>
 
 
@@ -76,7 +80,7 @@ interface MyFitFriendAPI {
     suspend fun getFoodByQR(@Query("qrCode") qrCode: String): FoodResponse
 
     @GET("/profile")
-    suspend fun getUserDetails(): User
+    suspend fun getUserDetails(): UserEntity
 
     @PATCH("/profile")
     suspend fun updateProfile(
@@ -100,7 +104,7 @@ interface MyFitFriendAPI {
     @POST ("/exercises")
     suspend fun addExerciseToWorkout(
         @Query("workoutId") workoutId: Int,
-        @Body exerciseRequest: ExerciseRequest
+        @Body exerciseRequest: ExerciseEntity
 
     ):Response<Unit>
 
@@ -122,8 +126,8 @@ interface MyFitFriendAPI {
 
     @POST ("/workout")
     suspend fun createWorkout(
-        @Body workoutRequest: WorkoutRequest
-    ):Response<Unit>
+        @Body workoutRequest: WorkoutEntity
+    ):Workout
     @DELETE("/workout")
     suspend fun deleteWorkoutById(@Query("workoutId")workoutId:Int):Response<Unit>
 
@@ -136,6 +140,12 @@ interface MyFitFriendAPI {
     suspend fun getOneExercise(
         @Query("exerciseId") exerciseId: Int)
 :Exercise
+
+    @GET("/exercises")
+    suspend fun getExercises(
+
+    ):List<Exercise>
+
 
     @GET("/dietgroup")
     suspend fun getGroups(

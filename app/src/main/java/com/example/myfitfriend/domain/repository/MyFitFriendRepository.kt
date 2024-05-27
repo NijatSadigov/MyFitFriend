@@ -3,6 +3,10 @@ package com.example.myfitfriend.domain.repository
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.ExerciseEntity
+import com.example.myfitfriend.data.local.UserEntity
+import com.example.myfitfriend.data.local.WorkoutEntity
 import com.example.myfitfriend.data.remote.reponses.AddFriendRequestInfo
 import com.example.myfitfriend.data.remote.reponses.DietGroup
 import com.example.myfitfriend.data.remote.reponses.DietaryLogResponse
@@ -25,11 +29,12 @@ interface MyFitFriendRepository {
     suspend fun login(userLoginRequest: UserLoginRequest):Int
     suspend fun register(userRegisterRequest: UserRegisterRequest):Int
     suspend fun updateUserDetails( userEditRequest: UserEditRequest):Int
-    suspend fun getUserDetails():User
+    suspend fun getUserDetails():UserEntity
+
     suspend fun getDietaryLogs():List<DietaryLogResponse>
     suspend fun getDietaryLogByDateAndPartOfDay(date:String, partOfDay:Int):List<DietaryLogResponse>
     suspend fun getDietaryLogById(dietaryLogId:Int):DietaryLogResponse
-    suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogRequest):Int
+    suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogEntity):Int
     suspend fun updateDietaryLog(id:Int, dietaryLogRequest: DietaryLogRequest):Int
     suspend fun deleteDietaryLog(id:Int):Int
 
@@ -46,15 +51,15 @@ interface MyFitFriendRepository {
     suspend fun getWorkoutById(workoutId:Int):Workout
     suspend fun getExercisesByWorkoutId(workoutId: Int):List<Exercise>
 
-    suspend fun createWorkout(workoutRequest: WorkoutRequest):Int
+    suspend fun createWorkout(workoutRequest: WorkoutEntity):Workout
     suspend fun deleteWorkoutById(workoutId: Int):Int
     suspend fun editWorkout(workoutId: Int,workoutRequest: WorkoutRequest):Int
 
     suspend fun getExercise(exerciseId:Int):Exercise
-    suspend fun addExercise(workoutId: Int, exerciseRequest: ExerciseRequest):Int
+    suspend fun addExercise(workoutId: Int, exerciseRequest: ExerciseEntity):Int
     suspend fun updateExercise(workoutId: Int,exerciseId:Int, exerciseRequest: ExerciseRequest):Int
     suspend fun deleteExercise(exerciseId:Int):Int
-
+    suspend fun getExercises():List<Exercise>
 //groups
     suspend fun getGroupById(groupId:Int):DietGroup
     suspend fun getGroupsOfUser():List<DietGroup>

@@ -5,9 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.MyFitFriend.data.model.Exercise
+import com.example.myfitfriend.data.local.DeletedItemsEntity
+import com.example.myfitfriend.data.local.ExerciseEntity
+import com.example.myfitfriend.data.local.domain.use_case.exercise.DeleteExerciseByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.exercise.GetExerciseByWorkoutIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.workout.DeleteWorkoutByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.workout.GetWorkoutByIdUseCaseLB
 import com.example.myfitfriend.domain.use_case.Workout.exercise.DeleteExerciseByIdUseCase
 import com.example.myfitfriend.domain.use_case.Workout.GetWorkoutByIdUseCase
 import com.example.myfitfriend.domain.use_case.Workout.GetWorkoutExercisesByIdUseCase
+import com.example.myfitfriend.domain.use_case.sync.delete.InsertDeletionTableUseCaseLB
 import com.example.myfitfriend.util.Resources
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -17,15 +24,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SpecificWorkoutScreenViewModel @Inject constructor(
-    private val getWorkoutByIdUseCase: GetWorkoutByIdUseCase,
-    private val getWorkoutExercisesByIdUseCase: GetWorkoutExercisesByIdUseCase,
-    private val deleteExerciseByIdUseCase: DeleteExerciseByIdUseCase
+    private val getWorkoutExercisesByIdUseCase: GetExerciseByWorkoutIdUseCaseLB,
+    private val deleteExerciseByIdUseCase: DeleteExerciseByIdUseCaseLB,
+    private val insertDeletionTableUseCaseLB:InsertDeletionTableUseCaseLB
 ) : ViewModel(){
-    private val _exercises = mutableStateOf<List<Exercise>>(emptyList<Exercise>())
-    val exercises : State<List<Exercise>> =_exercises
+    private val _exercises = mutableStateOf<List<ExerciseEntity>>(emptyList())
+    val exercises : State<List<ExerciseEntity>> =_exercises
+
+    private fun insertDeletionEntity(id:Int){
+        viewModelScope.launch {
+            insertDeletionTableUseCaseLB.invoke(
+                DeletedItemsEntity(
+                    typeOfItem =2,
+                    deletedId =id
+                )
+            ).onEach {
+                    r->
+                when(r){
+                    is Resources.Error -> {}
+                    is Resources.Loading -> {}
+                    is Resources.Success -> {
 
 
-     fun onDeleteExercise(exerciseId:Int,workoutId: Int)
+                    }
+                }
+            } .launchIn(viewModelScope)
+        }
+
+    }
+
+     fun onDeleteExercise(exerciseId:Int,workoutId: Int,isAdded:Boolean)
     {
         viewModelScope.launch {
             deleteExerciseByIdUseCase(
@@ -41,7 +69,9 @@ class SpecificWorkoutScreenViewModel @Inject constructor(
 
                     }
                     is Resources.Success -> {
-                        if(result.data==200){
+                        if(result.data!=null ){
+                            if(isAdded)
+                            insertDeletionEntity(exerciseId)
                             getExercises(workoutId)
                         }
                     }
@@ -68,7 +98,7 @@ class SpecificWorkoutScreenViewModel @Inject constructor(
                     }
                     is Resources.Success -> {
                         _exercises.value = result.data ?: emptyList() // Safely assign with fallback to empty list
-                    println(exercises)
+                    //println(exercises)
                     }
                 }
 

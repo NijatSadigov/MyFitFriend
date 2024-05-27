@@ -18,8 +18,8 @@ class GetGroupsUseCase @Inject constructor(
         try {
             emit(Resources.Loading<List<DietGroup>>())
             val response= repository.getGroupsOfUser()
-            println("response")
-            println(response )
+            //println("response")
+            //println(response )
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){

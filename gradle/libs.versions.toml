@@ -11,6 +11,7 @@ activity = "1.8.2"
 constraintlayout = "2.1.4"
 hilt-version = "2.48"
 junitKtx = "1.1.5"
+adapters = "3.2.0-alpha11"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -26,6 +27,7 @@ retrofitgsonconverter = { module = "com.squareup.retrofit2:converter-gson", vers
 hiltandroid = { module = "com.google.dagger:hilt-android", version.ref = "hilt-version" }
 hiltandroidcompiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-version" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-adapters = { group = "androidx.databinding", name = "adapters", version.ref = "adapters" }
 
 
 [plugins]

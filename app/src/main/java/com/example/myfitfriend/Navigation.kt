@@ -1,9 +1,14 @@
 package com.example.myfitfriend
 
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myfitfriend.connectivity.ConnectivityObserver
+import com.example.myfitfriend.connectivity.NetworkConnectivityObserver
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsScreen
 import com.example.myfitfriend.presentation.dietarylogs.Foods.BarcodeScannerScreen
 import com.example.myfitfriend.presentation.groups.addgroup.CreateGroupScreen
@@ -27,8 +32,12 @@ import com.example.myfitfriend.presentation.workouts.spesific.SpecificWorkoutScr
 import com.example.myfitfriend.util.Screen
 
 @Composable
-fun Navigation() {
+fun Navigation(applicationContext:Context) {
     val navController= rememberNavController()
+    lateinit var connectivityObserver: ConnectivityObserver
+
+    connectivityObserver= NetworkConnectivityObserver(applicationContext)
+
 
     NavHost(navController=navController, startDestination = Screen.LoginScreen.route)
     {
@@ -43,11 +52,11 @@ fun Navigation() {
         }
         composable(Screen.DietaryLogScreen.route)
         {
-            DietaryLogsScreen(navController=navController)
+            DietaryLogsScreen(navController=navController, connectivityObserver = connectivityObserver)
 
         }
         composable(Screen.ProfileScreen.route){
-            ProfileScreen(navController=navController)
+            ProfileScreen(navController=navController,connectivityObserver=connectivityObserver)
         }
         /////////////////////Workout and exercises
         composable(Screen.WorkoutScreen.route)
@@ -60,7 +69,7 @@ fun Navigation() {
         }
         composable(Screen.EditDietaryLogScreen.route+"?dietaryLogId={dietaryLogId}"){
                 navBackStackEntry ->
-            EditDietaryLogScreen(navController=navController, dietaryLogId =navBackStackEntry.arguments?.getString("dietaryLogId")!!.toInt() )
+            EditDietaryLogScreen(navController=navController, dietaryLogId =navBackStackEntry.arguments?.getString("dietaryLogId")!!.toInt())
         }
 
 
@@ -103,16 +112,12 @@ fun Navigation() {
         }
         composable(Screen.AddDietaryLogScreen.route+"?foodId={foodId}"){
             navBackStackEntry ->
-            val foodId=navBackStackEntry.arguments!!.getString("foodId")?.toInt()
-            if(foodId!=null){
+            val foodId=navBackStackEntry.arguments!!.getString("foodId")!!.toInt()
+
                 AddDietaryLogScreen(navController = navController, foodId =foodId)
 
 
-            }
-            else{
-                println("error in navigation: food id is null")
-                AddDietaryLogScreen(navController = navController, foodId =0)
-            }
+
         }
 
         composable(Screen.SpecificPartOfDayDietaryLogScreen.route +"?partOfDay={partOfDay}"){
@@ -147,7 +152,7 @@ fun Navigation() {
 
         composable(Screen.GroupsScreen.route){
 
-            GroupsScreen(navController=navController)
+            GroupsScreen(navController=navController,connectivityObserver=connectivityObserver)
         }
         composable(Screen.CreateGroupScreen.route){
             CreateGroupScreen(navController = navController)

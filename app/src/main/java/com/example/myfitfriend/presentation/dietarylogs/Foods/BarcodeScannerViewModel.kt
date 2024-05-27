@@ -7,6 +7,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.GetFoodByBarCodeUseCaseLB
 import com.example.myfitfriend.domain.use_case.users.GetFoodByBarCodeUseCase
 import com.example.myfitfriend.util.Resources
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BarcodeScannerViewModel @Inject constructor(
-    private val getFoodByBarCodeUseCase: GetFoodByBarCodeUseCase
+    private val getFoodByBarCodeUseCaseLB: GetFoodByBarCodeUseCaseLB
 ) : ViewModel() {
     private val scanner = BarcodeScanning.getClient()
 
@@ -35,7 +36,7 @@ class BarcodeScannerViewModel @Inject constructor(
 
     fun getItemOfBarCode(barcodeString: String) {
         viewModelScope.launch {
-            getFoodByBarCodeUseCase.invoke(barcodeString).onEach { r ->
+            getFoodByBarCodeUseCaseLB.invoke(barcodeString).onEach { r ->
                 when (r) {
                     is Resources.Error -> {
                         println("Error at GetIdOfBarcode, error:${r.message} ::: ${r.data}")
@@ -44,7 +45,7 @@ class BarcodeScannerViewModel @Inject constructor(
                     is Resources.Loading -> {}
                     is Resources.Success -> {
                         println("getItem revoked")
-                        _scannedItem.value = r.data?.foodId ?: ""
+                        _scannedItem.value = r.data?.foodId.toString() ?: ""
                         _scannedItemName.value = r.data?.foodName ?: ""
                     }
                 }

@@ -6,9 +6,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.ExerciseEntity
+import com.example.myfitfriend.data.local.LocalFoodEntity
+import com.example.myfitfriend.data.local.UserEntity
+import com.example.myfitfriend.data.local.WorkoutEntity
+import com.example.myfitfriend.data.local.asDietaryLogEntity
+import com.example.myfitfriend.data.local.asExerciseEntity
+import com.example.myfitfriend.data.local.asLocalFood
+import com.example.myfitfriend.data.local.asUser
+import com.example.myfitfriend.data.local.asUserEntity
+import com.example.myfitfriend.data.local.asWorkoutEntity
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.SetDietaryLogsUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.exercise.SetExercisesUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.foods.SetFoodsUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.user.ClearUserUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.user.SetUserUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.workout.SetWorkoutsUseCaseLB
 import com.example.myfitfriend.data.remote.BasicAuthInterceptor
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
+import com.example.myfitfriend.domain.use_case.Workout.GetWorkoutsUseCase
+import com.example.myfitfriend.domain.use_case.Workout.exercise.GetExercisesUseCase
+import com.example.myfitfriend.domain.use_case.dietarylogs.GetDietaryLogsUseCase
+import com.example.myfitfriend.domain.use_case.dietarylogs.ShowFoodsUseCase
+import com.example.myfitfriend.domain.use_case.users.GetUserDetailsByIdUseCase
 import com.example.myfitfriend.domain.use_case.users.LoginUserCase
+import com.example.myfitfriend.domain.use_case.users.ProfileUserCase
 import com.example.myfitfriend.util.Constants.KEY_LOGGED_IN_EMAIL
 import com.example.myfitfriend.util.Constants.KEY_PASSWORD
 import com.example.myfitfriend.util.Constants.NO_EMAIL
@@ -25,7 +48,22 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUserCase: LoginUserCase,
     private val sharedPreferences: SharedPreferences,
-    private val basicAuthInterceptor: BasicAuthInterceptor
+    private val basicAuthInterceptor: BasicAuthInterceptor,
+
+    private val profileUserCase: ProfileUserCase,
+    private val setUserUseCaseLB: SetUserUseCaseLB,
+
+    private val getFoodsUseCase:ShowFoodsUseCase,
+    private val setFoodsUseCaseLB: SetFoodsUseCaseLB,
+    private val getDietaryLogsUseCase: GetDietaryLogsUseCase,
+    private val setDietaryLogsUseCaseLB: SetDietaryLogsUseCaseLB,
+
+    private val getWorkoutsUseCase: GetWorkoutsUseCase,
+    private val setWorkoutsUseCaseLB: SetWorkoutsUseCaseLB,
+
+    private val getExercises:GetExercisesUseCase,
+    private val setExercisesUseCaseLB: SetExercisesUseCaseLB
+
 ) : ViewModel() {
     private val _emailState = mutableStateOf("")
     val emailState: State<String> = _emailState
@@ -63,17 +101,17 @@ class LoginViewModel @Inject constructor(
                     is Resources.Error -> {
                         _logInState.value = false
 
-                        println("result $result")
+                        //println("result $result")
                     }
                     is Resources.Loading -> {}
                     is Resources.Success -> {
-                        println("return code: ${result.data}   : @${result.message}")
+                        //println("return code: ${result.data}   : @${result.message}")
                         if (result.data == 200) {
-                            println("success")
+                            //println("success")
                             successfullyLoggedIn()
                         }
                         if (result.data == 401) {
-                            println("true")
+                            //println("true")
                             _toastEvent.value = ToastEvent.ShowToast("Wrong password or email")
                         }
                     }
@@ -88,12 +126,22 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun successfullyLoggedIn() {
-        _logInState.value = true
         sharedPreferences.edit().putString(KEY_LOGGED_IN_EMAIL, emailState.value).apply()
         sharedPreferences.edit().putString(KEY_PASSWORD, passwordState.value).apply()
 
         authAPI(emailState.value, passwordState.value)
+       //get user ->set user | setFoods|setDietaryLogs
+
+        getUserFromServer()
+        getFoods()
+
+
+        _logInState.value = true
+
+
     }
+
+
 
     fun isLoggedIn() {
         val currentEmail = sharedPreferences.getString(KEY_LOGGED_IN_EMAIL, NO_EMAIL) ?: NO_EMAIL
@@ -105,7 +153,99 @@ class LoginViewModel @Inject constructor(
             _logInState.value = false
         }
     }
+
+    private fun getUserFromServer(){
+        viewModelScope.launch {
+            profileUserCase().onEach {
+                    result->
+
+                when(result){
+                    is Resources.Error -> {
+                        println(result.message)
+                    }
+                    is Resources.Loading -> {
+                        println(result.message)
+
+                    }
+                    is Resources.Success -> {
+                        if(result.data!=null){
+                            val userEntity= result.data
+                            setUserToLB(userEntity)
+
+
+                        }
+
+                    }
+                }
+
+            }.launchIn(viewModelScope)
+
+
+
+
+        }
+    }
+
+    private fun setUserToLB(userEntity: UserEntity){
+        viewModelScope.launch {
+            setUserUseCaseLB.invoke(userEntity).onEach {
+                r->
+                when(r){
+                    is Resources.Error -> {}
+                    is Resources.Loading -> {}
+                    is Resources.Success -> {
+
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+    }
+
+
+    private fun getFoods(){
+        viewModelScope.launch {
+            getFoodsUseCase.invoke().onEach {
+                    r->
+                when(r){
+                    is Resources.Error -> {}
+                    is Resources.Loading -> {}
+                    is Resources.Success -> {
+                        if(r.data!=null){
+                            val localFoods=  r.data.map { it.asLocalFood() }
+
+                            setFoods(localFoods)
+                        }
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+    }
+
+
+   private fun setFoods(foods :List<LocalFoodEntity>){
+        viewModelScope.launch {
+            setFoodsUseCaseLB.invoke(foods).onEach {
+                    r->
+                when(r){
+                    is Resources.Error -> {}
+                    is Resources.Loading -> {}
+                    is Resources.Success -> {
+
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+
+   }
+
+
+    //get DietaryLogs and set
+
+
+
+
 }
+
 
 
 

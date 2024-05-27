@@ -19,8 +19,8 @@ class GetWorkoutExercisesByIdUseCase @Inject constructor(
         try {
             emit(Resources.Loading<List<Exercise>>())
             val response= repository.getExercisesByWorkoutId(workoutId)
-            println("response")
-            println(response )
+            //println("response")
+            //println(response )
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){

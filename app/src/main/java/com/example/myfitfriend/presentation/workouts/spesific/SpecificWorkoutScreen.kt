@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.MyFitFriend.data.model.Exercise
+import com.example.myfitfriend.data.local.ExerciseEntity
 import com.example.myfitfriend.util.Screen
 @Composable
 fun SpecificWorkoutScreen(
@@ -70,12 +71,12 @@ fun SpecificWorkoutContent(
                     ExerciseCard(
                         exercise = exercise,
                         onEditClicked = {
-                            println("exercise id: ${exercise.exerciseId} ")
+                            //println("exercise id: ${exercise.exerciseId} ")
                             navController.navigate("${Screen.EditExerciseScreen.route}?workoutId=${workoutId}&exerciseId=${exercise.exerciseId}")
                         },
                         onDeleteClicked = { ex ->
-                            viewModel.onDeleteExercise(ex.exerciseId, id)
-                            println("Delete clicked for ${ex.exerciseId}")
+                            viewModel.onDeleteExercise(ex.exerciseId, id,ex.isAdded)
+                            //println("Delete clicked for ${ex.exerciseId}")
                         }
                     )
                 }
@@ -98,9 +99,9 @@ fun SpecificWorkoutContent(
 
 @Composable
 fun ExerciseCard(
-    exercise: Exercise,
-    onEditClicked: (Exercise) -> Unit,
-    onDeleteClicked: (Exercise) -> Unit
+    exercise: ExerciseEntity,
+    onEditClicked: (ExerciseEntity) -> Unit,
+    onDeleteClicked: (ExerciseEntity) -> Unit
 ) {
     Card(
         modifier = Modifier

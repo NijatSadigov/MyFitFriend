@@ -115,7 +115,8 @@ class RegisterViewModel @Inject constructor(
                 height = safeHeight,
                 weight = safeWeight,
                 age = userAge.value,
-                sex = userSex.value
+                sex = userSex.value,
+                lastEditDate = System.currentTimeMillis()
             )).onEach { result ->
                 when (result) {
                     is Resources.Error -> {
@@ -129,23 +130,18 @@ class RegisterViewModel @Inject constructor(
                             400 -> showToast(context, "An error occurred")
                         }
                         if (result.data == 200)
-                            successfullyRegistered()
+                            successfullyRegistered(context)
                     }
                 }
             }.launchIn(viewModelScope)
         }
     }
 
-    private fun authAPI(email: String, password: String) {
-        basicAuthInterceptor.email = email
-        basicAuthInterceptor.password = password
-    }
 
-    private fun successfullyRegistered() {
+    private fun successfullyRegistered(context: Context) {
         _isRegistered.value = true
-        sharedPreferences.edit().putString(KEY_LOGGED_IN_EMAIL, emailState.value).apply()
-        sharedPreferences.edit().putString(KEY_PASSWORD, passwordState.value).apply()
-        authAPI(emailState.value, passwordState.value)
+
+        showToast(context, "successfully registered")
     }
 
     private fun showToast(context: Context, message: String) {

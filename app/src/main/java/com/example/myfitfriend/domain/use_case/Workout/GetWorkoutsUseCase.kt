@@ -18,8 +18,8 @@ operator fun invoke():Flow<Resources<List<Workout>>> =flow{
 try {
         emit(Resources.Loading<List<Workout>>())
        val response= repository.getWorkouts()
-    println("response")
-    println(response )
+    //println("response")
+    //println(response )
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){

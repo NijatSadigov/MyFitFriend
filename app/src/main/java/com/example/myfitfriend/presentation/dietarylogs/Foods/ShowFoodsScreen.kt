@@ -94,7 +94,7 @@ fun FoodsList(navController: NavController, foods: List<FoodResponse>) {
                 val food = foods[index]
                 FoodCard(food) {
                     // Action on food card click
-                    println("foodid from showfoods ${food.foodId}")
+                    //println("foodid from showfoods ${food.foodId}")
                     navController.navigate(Screen.AddDietaryLogScreen.route + "?foodId=${food.foodId}")
                 }
             }

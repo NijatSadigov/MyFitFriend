@@ -10,5 +10,7 @@ data class User(
     val activityLevel:Int,
     val userId: Int,  // Assuming an auto-increment ID is used
     val sex: Boolean,
-    val age:Int
+    val age:Int,
+    val lastEditDate:Long,
+    val isSync:Boolean
 )

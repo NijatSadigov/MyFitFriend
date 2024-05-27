@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import com.example.myfitfriend.data.local.WorkoutEntity
 
 @Composable
 fun WorkoutScreen(
@@ -34,6 +35,10 @@ fun WorkoutScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getWorkouts()
+    }
+    LaunchedEffect(workouts) {
+        viewModel.getWorkouts()
+
     }
 
     Scaffold(
@@ -89,7 +94,7 @@ fun WorkoutBottomBar(navController: NavController) {
 }
 
 @Composable
-fun WorkoutList(workouts: List<Workout>, navController: NavController, viewModel: WorkoutScreenViewModel, modifier: Modifier = Modifier) {
+fun WorkoutList(workouts: List<WorkoutEntity>, navController: NavController, viewModel: WorkoutScreenViewModel, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier.padding(horizontal = 8.dp)) {
         items(workouts) { workout ->
             WorkoutCard(
@@ -101,7 +106,7 @@ fun WorkoutList(workouts: List<Workout>, navController: NavController, viewModel
                     navController.navigate("${Screen.EditWorkoutScreen.route}?workoutId=$workoutId")
                 },
                 onDelete = { workoutId ->
-                    viewModel.onDelete(workoutId)
+                    viewModel.onDelete(workoutId,workout.isAdded)
                 }
             )
         }
@@ -112,7 +117,7 @@ fun WorkoutList(workouts: List<Workout>, navController: NavController, viewModel
 
 
 @Composable
-fun WorkoutCard(workout: Workout, onClick: (Int) -> Unit, onEdit: (Int) -> Unit, onDelete: (Int) -> Unit) {
+fun WorkoutCard(workout: WorkoutEntity, onClick: (Int) -> Unit, onEdit: (Int) -> Unit, onDelete: (Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

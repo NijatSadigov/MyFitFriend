@@ -126,6 +126,7 @@ class SpecificGroupScreenViewModel @Inject constructor(
                     is Resources.Success -> {
                         if (result.data == 200){
                             _successfullyKicked.value = true
+                            getGroupMembersLogs(groupId)
                         }
                     }
                 }

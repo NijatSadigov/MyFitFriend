@@ -17,8 +17,8 @@ class UpdateExerciseUseCase @Inject constructor(
         try {
             emit(Resources.Loading<Int>())
             val response= repository.updateExercise(workoutId=workoutId,exerciseId=exerciseId,exerciseRequest=exerciseRequest)
-            println("response")
-            println(response )
+            //println("response")
+            //println(response )
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){

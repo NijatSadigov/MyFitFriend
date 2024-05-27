@@ -8,5 +8,6 @@ data class UserRegisterRequest(
     val height:Double,
     val activityLevel:Int,
     val sex: Boolean,
-    val age:Int
+    val age:Int,
+    val lastEditDate:Long
 )

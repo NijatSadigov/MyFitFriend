@@ -20,18 +20,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myfitfriend.connectivity.ConnectivityObserver
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.util.Screen
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsBottomBar
 
 
     @Composable
-    fun EditDietaryLogScreen(navController: NavController, viewModel: EditDietaryLogScreenViewModel = hiltViewModel(), dietaryLogId: Int) {
+    fun EditDietaryLogScreen(navController: NavController,
+                             viewModel: EditDietaryLogScreenViewModel = hiltViewModel(),
+                             dietaryLogId: Int) {
         LaunchedEffect(key1 = true) {
             println("EditDietaryLogScreen $dietaryLogId")
             viewModel.onScreenStartGetFood(dietaryLogId)
         //viewModel.getDietaryLogByDateAndPartOfDay()
         }
+
 
         LaunchedEffect(key1 = viewModel.successfulSubmission.value) {
             if (viewModel.successfulSubmission.value) {

@@ -16,8 +16,8 @@ class CreateDietGroupUseCase @Inject constructor(
         try {
             emit(Resources.Loading())
             val response= repository.createGroup(groupName)
-            println("response")
-            println(response )
+            //println("response")
+            //println(response )
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){

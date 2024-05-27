@@ -5,6 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myfitfriend.connectivity.ConnectivityObserver
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.GetDietaryLogByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.dietary_log.UpdateDietaryLogsEntityUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.foods.GetFoodByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.user.GetUserUseCaseLB
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.domain.use_case.dietarylogs.GetDietaryLogByIdUseCase
@@ -13,6 +19,7 @@ import com.example.myfitfriend.domain.use_case.dietarylogs.InsertDietaryLogCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.ShowFoodsUseCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.UpdateDietaryLogUseCase
 import com.example.myfitfriend.util.Resources
+import com.example.myfitfriend.util.SyncOperationsUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -21,9 +28,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditDietaryLogScreenViewModel @Inject constructor(
-   private val getFoodUseCase: GetFoodUseCase,
-    private val updateDietaryLogUseCase: UpdateDietaryLogUseCase,
-    private val getDietaryLogByIdUseCase: GetDietaryLogByIdUseCase
+    private val getFoodUseCase: GetFoodByIdUseCaseLB,
+    private val updateDietaryLogUseCaseLB: UpdateDietaryLogsEntityUseCaseLB,
+    private val getDietaryLogByIdUseCase: GetDietaryLogByIdUseCaseLB
+
 ):ViewModel() {
     private val _amountOfFood = mutableStateOf("100") //SHOULD be DOUBLE
     val amountOfFood : State<String> =_amountOfFood
@@ -37,6 +45,10 @@ class EditDietaryLogScreenViewModel @Inject constructor(
 
     private val _foodName = mutableStateOf("")
     val foodName:State<String> =_foodName
+
+    private val _date = mutableStateOf("")
+    val date:State<String> =_date
+
 
     private val _foodCal = mutableStateOf(0.0)
     val foodCal:State<Double> =_foodCal
@@ -110,6 +122,8 @@ class EditDietaryLogScreenViewModel @Inject constructor(
                             _foodIdOfLog.value=result.data.foodId
                             _amountOfFood.value=result.data.amountOfFood.toString()
                             _dietaryLogId.value=result.data.dietaryLogId
+                            _userId.value=result.data.userId
+                            _date.value=result.data.date
                             onScreenStart()
                             onAmountOfFoodChange(_amountOfFood.value)
                             onPartOfDayChange(result.data.partOfDay)
@@ -121,6 +135,8 @@ class EditDietaryLogScreenViewModel @Inject constructor(
             }.launchIn(viewModelScope)
         }
     }
+    private val _userId = mutableStateOf(0)
+    val userId: State<Int> =_userId
 
     fun onScreenStart(){
          val foodId = foodIdOfLog.value
@@ -151,14 +167,20 @@ class EditDietaryLogScreenViewModel @Inject constructor(
 
     fun onSubmit(){
         viewModelScope.launch {
-            updateDietaryLogUseCase(
-                id=dietaryLogId.value
-                ,dietaryLogRequest = DietaryLogRequest(
+            updateDietaryLogUseCaseLB(
+                DietaryLogEntity(
                 amountOfFood = amountOfFood.value.toDouble(),
                 foodId = foodIdOfLog.value,
                 partOfDay = partOfDay.value,
+                    foodItem = foodName.value,
+                    lastEditDate = System.currentTimeMillis(),
+                    date = date.value,
+                    userId = userId.value,
+                    dietaryLogId = dietaryLogId.value
 
-                )).onEach {
+
+                )
+            ).onEach {
                 result->
                 when(result){
                     is Resources.Error -> {
@@ -166,13 +188,20 @@ class EditDietaryLogScreenViewModel @Inject constructor(
                     }
                     is Resources.Loading -> {}
                     is Resources.Success -> {
-                        if(result.data==200) _successfulSubmission.value=true
-                        else println("err at succes")
+                        if(result.data!=null) {
+
+                            _successfulSubmission.value = true
+
+
+
+                        }
+                            else println("err at succes")
                     }
                 }
             }.launchIn(viewModelScope)
         }
     }
+
 
 
 

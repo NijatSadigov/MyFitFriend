@@ -11,4 +11,5 @@ data class Exercise(
     val setCount:Int=0,
     val repCount:Int=0,
     val restTime:Double=0.0,
+    val lastEditDate:Long
 )

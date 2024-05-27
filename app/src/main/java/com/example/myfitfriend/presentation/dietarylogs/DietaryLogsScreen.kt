@@ -14,16 +14,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.myfitfriend.connectivity.ConnectivityObserver
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsViewModel
 import com.example.myfitfriend.util.Screen
 
 
 @Composable
-fun DietaryLogsScreen(navController: NavController, viewModel: DietaryLogsViewModel = hiltViewModel()) {
+fun DietaryLogsScreen(navController: NavController,
+                      viewModel: DietaryLogsViewModel = hiltViewModel(),
+                      connectivityObserver: ConnectivityObserver) {
     // Launch effect to load dietary logs when the component is first composed
     LaunchedEffect(key1 = true) {
         viewModel.getDietaryLogs()
         //viewModel.getDietaryLogByDateAndPartOfDay()
+    }
+    val status by connectivityObserver.observe().collectAsState(
+        initial = ConnectivityObserver.Status.Unavailable
+    )
+    LaunchedEffect (status){
+        viewModel.setConnectionState(status)
+
     }
 
     // Main scaffold with top app bar and floating action button

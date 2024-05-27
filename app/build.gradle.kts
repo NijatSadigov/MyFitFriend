@@ -75,6 +75,7 @@ dependencies {
     // Hilt dependencies
     implementation("com.google.dagger:hilt-android:2.48")
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.adapters)
     kapt("com.google.dagger:hilt-compiler:2.48")
 
     // For ViewModel injections with Hilt in Compose

@@ -17,8 +17,8 @@ operator fun invoke():Flow<Resources<List<DietaryLogResponse>>> =flow{
 try {
         emit(Resources.Loading<List<DietaryLogResponse>>())
        val response= repository.getDietaryLogs()
-    println("response")
-    println(response )
+    //println("response")
+    //println(response )
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){

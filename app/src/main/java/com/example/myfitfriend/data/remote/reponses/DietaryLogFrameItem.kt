@@ -8,5 +8,7 @@ data class DietaryLogFrameItem(
     val protein:Double,
     val fat:Double,
     val qrCode:String?,
+    val isSync:Boolean,
+    val isAdded:Boolean,
     val dietaryLogId: Int//
 )

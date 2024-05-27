@@ -26,7 +26,7 @@ private val createDietGroupUseCase: CreateDietGroupUseCase
 
     fun onCreateGroup(){
         viewModelScope.launch {
-            println("Launcs")
+            //println("Launcs")
             createDietGroupUseCase(groupName.value).onEach { result->
                 when(result){
                     is Resources.Error -> {

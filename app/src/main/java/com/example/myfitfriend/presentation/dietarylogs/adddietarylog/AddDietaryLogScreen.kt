@@ -1,36 +1,31 @@
 package com.example.myfitfriend.presentation.dietarylogs.adddietarylog
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.util.Screen
 import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsBottomBar
 
 
     @Composable
-    fun AddDietaryLogScreen(navController: NavController, viewModel: AddDietaryLogScreenViewModel = hiltViewModel(), foodId: Int) {
+    fun AddDietaryLogScreen(navController: NavController,
+                            viewModel: AddDietaryLogScreenViewModel = hiltViewModel(),
+                            foodId: Int
+    ) {
         LaunchedEffect(key1 = true) {
             viewModel.onScreenStart(foodId)
         //viewModel.getDietaryLogByDateAndPartOfDay()
         }
+
         LaunchedEffect(key1 = viewModel.successfulSubmission.value) {
             if (viewModel.successfulSubmission.value) {
                 navController.navigate(Screen.DietaryLogScreen.route) {
@@ -54,7 +49,9 @@ import com.example.myfitfriend.presentation.dietarylogs.DietaryLogsBottomBar
             },
             bottomBar = { DietaryLogsBottomBar(navController) }
         ) { padding ->
-            Column(modifier = Modifier.padding(padding).padding(8.dp)) {
+            Column(modifier = Modifier
+                .padding(padding)
+                .padding(8.dp)) {
                 FoodDetailsSection(viewModel)
                 AmountOfFoodInput(viewModel)
                 PartOfDayButtons(viewModel)
@@ -112,7 +109,9 @@ fun SubmitButton(viewModel: AddDietaryLogScreenViewModel, foodId: Int) {
         onClick = { viewModel.onSubmit(foodId)
 
                   },
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         enabled = viewModel.partOfDay.value != -1  // Disabled if no part of day is selected
     ) {
         Icon(Icons.Filled.Check, contentDescription = "Submit")

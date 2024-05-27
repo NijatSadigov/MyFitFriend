@@ -20,7 +20,7 @@ operator fun invoke(id:Int):Flow<Resources<DietaryLogResponse>> =flow{
 try {
         emit(Resources.Loading<DietaryLogResponse>())
        val response= repository.getDietaryLogById(id)
-    println("GetDietaryLogByIdUseCase : $response")
+    //println("GetDietaryLogByIdUseCase : $response")
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){

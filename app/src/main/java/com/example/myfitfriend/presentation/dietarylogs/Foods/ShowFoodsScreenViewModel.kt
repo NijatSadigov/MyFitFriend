@@ -5,6 +5,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myfitfriend.data.local.asFoodResponse
+import com.example.myfitfriend.data.local.domain.use_case.foods.GetFoodsUseCaseLB
 import com.example.myfitfriend.data.remote.reponses.FoodResponse
 import com.example.myfitfriend.domain.use_case.dietarylogs.InsertDietaryLogCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.ShowFoodsUseCase
@@ -18,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShowFoodsScreenViewModel @Inject constructor(
-    private val showFoodsUseCase: ShowFoodsUseCase
+    private val showFoodsUseCase: GetFoodsUseCaseLB
 ):ViewModel() {
     private val _foods = mutableStateOf<List<FoodResponse>>(emptyList())
     val foods: State<List<FoodResponse>> =_foods
@@ -44,7 +46,7 @@ class ShowFoodsScreenViewModel @Inject constructor(
                     }
                     is Resources.Success -> {
                        if(result.data!=null) {
-                           _foods.value = result.data
+                           _foods.value = result.data.map { it.asFoodResponse() }
                             _filteredFoods.value=foods.value
                        }
                     }

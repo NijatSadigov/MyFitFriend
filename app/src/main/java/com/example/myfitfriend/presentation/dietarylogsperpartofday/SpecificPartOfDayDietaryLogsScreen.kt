@@ -66,7 +66,7 @@ fun FoodListSection(viewModel: SpecificPartOfDayDietaryLogsScreenViewModel, navC
                         Text(text = "Cal: ${food.cal}  Carb: ${food.carb}g  Protein: ${food.protein}g  Fat: ${food.fat}g")
                     }
                     IconButton(onClick = {
-                        viewModel.onDeleteDietaryLog(partOfDay =partOfDay, dietaryLogId = food.dietaryLogId )
+                        viewModel.onDeleteDietaryLog(partOfDay =partOfDay, dietaryLogId = food.dietaryLogId, isAdded = food.isAdded )
                     /* Implement delete functionality */ }) {
                         Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
                     }
@@ -94,7 +94,7 @@ fun NutritionalInfoSection(viewModel: SpecificPartOfDayDietaryLogsScreenViewMode
         Text("Total Carbs: ${viewModel.totalCarbs.value}g", style = MaterialTheme.typography.body1)
         Text("Total Protein: ${viewModel.totalProtein.value}g", style = MaterialTheme.typography.body1)
         Text("Total Fats: ${viewModel.totalFats.value}g", style = MaterialTheme.typography.body1)
-        println("Debug: Calories = ${viewModel.totalCalories.value}")
+        //println("Debug: Calories = ${viewModel.totalCalories.value}")
 
     }
 }

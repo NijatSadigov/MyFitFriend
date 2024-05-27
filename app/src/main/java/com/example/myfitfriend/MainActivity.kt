@@ -3,8 +3,11 @@ package com.example.myfitfriend
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.myfitfriend.connectivity.ConnectivityObserver
+import com.example.myfitfriend.connectivity.NetworkConnectivityObserver
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -13,8 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         // Configure the activity to render content in edge-to-edge mode
         // where the app content extends into the window insets area.
@@ -22,7 +28,8 @@ class MainActivity : ComponentActivity() {
 
         // Set the content of the activity using Jetpack Compose.
         setContent {
-            Navigation() // Replace 'Navigation' with your actual composable function
+
+            Navigation(applicationContext) // Replace 'Navigation' with your actual composable function
         }
     }
 

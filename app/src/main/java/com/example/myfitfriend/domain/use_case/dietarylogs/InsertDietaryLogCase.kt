@@ -1,5 +1,6 @@
 package com.example.myfitfriend.domain.use_case.dietarylogs
 
+import com.example.myfitfriend.data.local.DietaryLogEntity
 import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.domain.repository.MyFitFriendRepository
 import com.example.myfitfriend.util.Resources
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class InsertDietaryLogCase @Inject constructor(
     private val repository:MyFitFriendRepository
 ){
-operator fun invoke(dietaryLogRequest: DietaryLogRequest):Flow<Resources<Int>> =flow{
+operator fun invoke(dietaryLogRequest: DietaryLogEntity):Flow<Resources<Int>> =flow{
 
 try {
         emit(Resources.Loading<Int>())

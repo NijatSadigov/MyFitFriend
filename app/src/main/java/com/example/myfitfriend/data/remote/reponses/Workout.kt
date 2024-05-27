@@ -5,5 +5,6 @@ data class Workout(
     val description:String,
     val date: String, // Using String for simplicity, convert to date as needed
     val workoutId: Int = 0,
-    val title:String
+    val title:String,
+    val lastEditDate:Long
 )

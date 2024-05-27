@@ -28,26 +28,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.myfitfriend.presentation.login.LoginViewModel
 import com.example.myfitfriend.util.Screen
 import kotlin.math.roundToInt
 
 import android.widget.Toast
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import com.example.myfitfriend.connectivity.ConnectivityObserver
 
 @Composable
-fun showToast(message: String) {
-    val context = LocalContext.current
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-}
-
-@Composable
-fun ProfileScreen(navController: NavController, viewModel: ProfileScreenViewModel = hiltViewModel()) {
+fun ProfileScreen(
+    navController: NavController,
+    viewModel: ProfileScreenViewModel = hiltViewModel(),
+    connectivityObserver: ConnectivityObserver
+) {
     LaunchedEffect(key1 = true) {
         viewModel.getProfileDetails()
     }
 
-    val context = LocalContext.current  // Get the context for the Toast
+    val status by connectivityObserver.observe().collectAsState(
+        initial = ConnectivityObserver.Status.Unavailable
+    )
+    LaunchedEffect(status) {
+        if (status == ConnectivityObserver.Status.Available)
+            viewModel.saveChanges()
+    }
+
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -73,34 +84,43 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileScreenViewMode
                     label = { Text("User Name") }
                 )
                 OutlinedTextField(
-                    value = viewModel.userWeight.value.toString(),
-                    onValueChange = { weight -> viewModel.updateWeight(weight.toDoubleOrNull() ?: viewModel.userWeight.value) },
-                    label = { Text("Weight (kg)") }
+                    value = viewModel.userWeight.value,
+                    onValueChange = viewModel::updateWeight,
+                    label = { Text("Weight (kg)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
                 )
                 OutlinedTextField(
-                    value = viewModel.userHeight.value.toString(),
-                    onValueChange = { height -> viewModel.updateHeight(height.toDoubleOrNull() ?: viewModel.userHeight.value) },
-                    label = { Text("Height (cm)") }
+                    value = viewModel.userHeight.value,
+                    onValueChange = viewModel::updateHeight,
+                    label = { Text("Height (cm)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
                 )
                 Text("Activity Level: ${viewModel.userActivityLevel.value}")
                 Slider(
                     value = viewModel.userActivityLevel.value.toFloat(),
                     onValueChange = { viewModel.updateActivityLevel(it.roundToInt()) },
                     valueRange = 0f..3f,
-                    steps = 2 // This makes the slider snap to values 0, 1, 2, 3
+                    steps = 2
                 )
                 Text("Age: ${viewModel.userAge.value}", fontSize = 18.sp)
                 Slider(
                     value = viewModel.userAge.value.toFloat(),
                     onValueChange = { viewModel.onAgeChange(it.roundToInt()) },
                     valueRange = 0f..100f,
-                    steps = 82, // Enables fine-grained age selection
-                    onValueChangeFinished = {}
+                    steps = 82
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Button(
                         onClick = { viewModel.onSexChange(true) },
-                        modifier = Modifier.weight(1f).padding(4.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = if (viewModel.userSex.value) Color.Blue else Color.LightGray,
                             contentColor = Color.White
@@ -111,7 +131,9 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileScreenViewMode
                     }
                     Button(
                         onClick = { viewModel.onSexChange(false) },
-                        modifier = Modifier.weight(1f).padding(4.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = if (!viewModel.userSex.value) Color.Blue else Color.LightGray,
                             contentColor = Color.White
@@ -124,7 +146,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileScreenViewMode
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = {
-                        viewModel.saveChanges {
+                        viewModel.saveChangesLocally {
                             Toast.makeText(context, "Profile edited successfully!", Toast.LENGTH_SHORT).show()
                         }
                     },
@@ -132,7 +154,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileScreenViewMode
                 ) {
                     Text("Save")
                 }
-                Spacer(modifier = Modifier.height(8.dp))  // Provides visual separation between buttons
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
                         viewModel.logOut()

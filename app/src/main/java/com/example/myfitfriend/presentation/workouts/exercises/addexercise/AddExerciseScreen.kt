@@ -12,11 +12,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-
 @Composable
 fun AddExerciseScreen(
     navController: NavController,
-    viewModel: AddExerciseScreenViewModel= hiltViewModel(),
+    viewModel: AddExerciseScreenViewModel = hiltViewModel(),
     workoutId: Int
 ) {
     Scaffold(
@@ -94,9 +93,6 @@ fun AddExerciseScreen(
             Button(
                 onClick = {
                     viewModel.onSubmitNewExercise(workoutId)
-                    if (viewModel.onSuccessfullyAdd.value) {
-                        navController.navigateUp()
-                    }
                 },
                 modifier = Modifier.align(Alignment.End)
             ) {

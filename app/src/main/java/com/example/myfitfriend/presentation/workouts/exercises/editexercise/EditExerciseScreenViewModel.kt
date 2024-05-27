@@ -5,6 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.MyFitFriend.requests.ExerciseRequest
+import com.example.myfitfriend.data.local.ExerciseEntity
+import com.example.myfitfriend.data.local.domain.use_case.exercise.GetExerciseByIdUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.exercise.UpdateExerciseUseCaseLB
+import com.example.myfitfriend.data.local.domain.use_case.workout.UpdateWorkoutUseCaseLB
 import com.example.myfitfriend.domain.use_case.Workout.GetExerciseByIdUseCase
 import com.example.myfitfriend.domain.use_case.Workout.exercise.AddExerciseToWorkoutUseCase
 import com.example.myfitfriend.domain.use_case.Workout.exercise.UpdateExerciseUseCase
@@ -17,8 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditExerciseScreenViewModel @Inject constructor(
-    private val  updateExerciseUseCase: UpdateExerciseUseCase,
-    private val getExerciseUseCase: GetExerciseByIdUseCase
+    private val  updateExerciseUseCase: UpdateExerciseUseCaseLB,
+    private val getExerciseUseCase: GetExerciseByIdUseCaseLB
     ) : ViewModel(){
 
 
@@ -95,13 +99,16 @@ class EditExerciseScreenViewModel @Inject constructor(
     fun onSubmitEditedExercise(workoutId: Int,exerciseId:Int){
         viewModelScope.launch {
             updateExerciseUseCase(
-                workoutId ,exerciseId, exerciseRequest = ExerciseRequest(
+               ee = ExerciseEntity(
                     title = title.value,
                     description = description.value,
                     weights = weights.value.toDouble(),
                     setCount=setCount.value.toInt(),
                     repCount = repCount.value.toInt(),
-                    restTime = restTime.value.toDouble()
+                    restTime = restTime.value.toDouble(),
+                   lastEditDate = System.currentTimeMillis(),
+                   workoutId = workoutId,
+                   exerciseId = exerciseId
                 )
             ).onEach {
                     result->
@@ -114,7 +121,7 @@ class EditExerciseScreenViewModel @Inject constructor(
 
                     }
                     is Resources.Success -> {
-                        if(result.data==200){
+                        if(result.data!=null ){
                             _onSuccessfullyEdit.value=true                        }
                     }
                 }

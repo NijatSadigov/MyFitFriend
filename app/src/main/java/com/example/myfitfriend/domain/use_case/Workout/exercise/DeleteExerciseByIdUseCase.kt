@@ -16,8 +16,8 @@ class DeleteExerciseByIdUseCase @Inject constructor(
         try {
             emit(Resources.Loading<Int>())
             val response= repository.deleteExercise(exerciseId=exerciseId)
-            println("response")
-            println(response )
+            //println("response")
+            //println(response )
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){

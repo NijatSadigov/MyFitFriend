@@ -1,5 +1,6 @@
 package com.example.myfitfriend.domain.use_case.users
 
+import com.example.myfitfriend.data.local.UserEntity
 import com.example.myfitfriend.data.remote.reponses.User
 import com.example.myfitfriend.data.remote.reponses.UserResponse
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
@@ -14,21 +15,21 @@ import javax.inject.Inject
 class ProfileUserCase @Inject constructor(
     private val repository:MyFitFriendRepository
 ){
-    operator fun invoke():Flow<Resources<User>> =flow{
+    operator fun invoke():Flow<Resources<UserEntity>> =flow{
 
         try {
-            emit(Resources.Loading<User>())
+            emit(Resources.Loading())
             val response= repository.getUserDetails()
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){
             emit(
-                Resources.Error<User>(message =  e.localizedMessage?:"Unknown error occured")
+                Resources.Error(message =  e.localizedMessage?:"Unknown error occured")
             )
         }
         catch (e:IOException){
             emit(
-                Resources.Error<User>(message = "could not determine err")
+                Resources.Error(message = "could not determine err")
             )
         }
 

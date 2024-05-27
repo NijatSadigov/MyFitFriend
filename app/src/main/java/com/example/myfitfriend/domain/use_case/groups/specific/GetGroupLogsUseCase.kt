@@ -19,8 +19,8 @@ class GetGroupLogsUseCase @Inject constructor(
         try {
             emit(Resources.Loading())
             val response= repository.getDietGroupLogs(groupId=groupId,doYouWantGroupDietaryLogItem = true)
-            println("response")
-            println(response )
+            //println("response")
+            //println(response )
             emit(Resources.Success(data=response))
         }
         catch (e:HttpException){

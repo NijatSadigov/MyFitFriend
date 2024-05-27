@@ -3,6 +3,10 @@ package com.example.myfitfriend.data.repository
 import com.MyFitFriend.data.model.Exercise
 import com.MyFitFriend.requests.ExerciseRequest
 import com.MyFitFriend.requests.WorkoutRequest
+import com.example.myfitfriend.data.local.DietaryLogEntity
+import com.example.myfitfriend.data.local.ExerciseEntity
+import com.example.myfitfriend.data.local.UserEntity
+import com.example.myfitfriend.data.local.WorkoutEntity
 import com.example.myfitfriend.data.remote.MyFitFriendAPI
 import com.example.myfitfriend.data.remote.reponses.AddFriendRequestInfo
 import com.example.myfitfriend.data.remote.reponses.DietGroup
@@ -43,7 +47,7 @@ class MyFitFriendRepositoryIMPL @Inject constructor(val api: MyFitFriendAPI) : M
 
     }
 
-    override suspend fun getUserDetails(): User {
+    override suspend fun getUserDetails(): UserEntity {
         return api.getUserDetails()
     }
 
@@ -61,7 +65,7 @@ class MyFitFriendRepositoryIMPL @Inject constructor(val api: MyFitFriendAPI) : M
     override suspend fun getDietaryLogById(dietaryLogId: Int): DietaryLogResponse {
         return api.getDietaryLogById(dietaryLogId)
     }
-    override suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogRequest): Int {
+    override suspend fun insertDietaryLog(dietaryLogRequest: DietaryLogEntity): Int {
 return api.insertDietaryLog(dietaryLogRequest).code()
     }
 
@@ -97,7 +101,7 @@ return api.getFoodByQR(qrCode)   }
         return api.getExercisesByWorkoutId(workoutId)
     }
 
-    override suspend fun addExercise(workoutId: Int, exerciseRequest: ExerciseRequest): Int {
+    override suspend fun addExercise(workoutId: Int, exerciseRequest: ExerciseEntity): Int {
         return api.addExerciseToWorkout(workoutId=workoutId,exerciseRequest=exerciseRequest).code()
     }
 
@@ -111,11 +115,12 @@ return api.updateExerciseToWorkout(workoutId=workoutId,exerciseId=exerciseId, ex
     override suspend fun deleteExercise(exerciseId: Int): Int {
 return api.deleteExerciseFromWorkout(exerciseId).code()    }
     ////workouts
-    override suspend fun createWorkout(workoutRequest: WorkoutRequest): Int {
-        return api.createWorkout(workoutRequest).code()
+    override suspend fun createWorkout(workoutRequest: WorkoutEntity): Workout {
+        return api.createWorkout(workoutRequest)
     }
 
     override suspend fun deleteWorkoutById(workoutId: Int): Int {
+        println("delete workoutId $workoutId")
         return api.deleteWorkoutById(workoutId).code()
     }
 
@@ -127,13 +132,16 @@ return api.deleteExerciseFromWorkout(exerciseId).code()    }
         return api.getOneExercise(exerciseId)
     }
 
+    override suspend fun getExercises(): List<Exercise> {
+        return api.getExercises()
+    }
 
     //groups
     override suspend fun getGroupById(groupId: Int): DietGroup {
         return api.getGroupById(groupId)
     }
     override suspend fun getGroupsOfUser(): List<DietGroup> {
-       println("repository ${api.getGroups()}")
+       //println("repository ${api.getGroups()}")
         return api.getGroups()
     }
 
