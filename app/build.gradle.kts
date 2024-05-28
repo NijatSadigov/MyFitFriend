@@ -133,26 +133,42 @@ dependencies {
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
     //testing
+
+    // Unit testing dependencies
     // Unit testing dependencies
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.9.0")
-    testImplementation("org.mockito:mockito-inline:3.9.0")
-
-    androidTestImplementation( "androidx.arch.core:core-testing:2.1.0")
-    // AndroidX Test - JVM testing
+    testImplementation("org.mockito:mockito-core:4.4.0")
+    // Exclude mockito-core from mockito-inline if both are necessary
+    testImplementation("org.mockito:mockito-inline:4.4.0") {
+        exclude(group = "org.mockito", module = "mockito-core")
+    }
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
     testImplementation("androidx.test:core:1.4.0")
-    testImplementation("androidx.test:runner:1.4.0")
-    testImplementation("androidx.test:rules:1.4.0")
+    testImplementation("androidx.test:runner:1.5.2")
+    testImplementation("androidx.test:rules:1.5.0")
+    testImplementation("org.robolectric:robolectric:4.8.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("com.google.truth:truth:1.1.3")
+    testImplementation("org.hamcrest:hamcrest-all:1.3")
 
-    // AndroidX Test - Instrumented testing
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-
-    // Mocking dependencies for Android
-    androidTestImplementation("org.mockito:mockito-android:3.9.0")
+    // Instrumented Unit Tests
+    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("org.mockito:mockito-android:4.4.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.3")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.3")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    androidTestImplementation("com.google.truth:truth:1.1.3")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    // Exclude mockito-core from mockito-android if necessary
+    androidTestImplementation("org.mockito:mockito-core:4.4.0") {
+        exclude(group = "org.mockito", module = "mockito-core")
+    }
 
-    // Needed for Navigation
-    androidTestImplementation("androidx.navigation:navigation-testing:2.4.2")
+
+    // Additional Dependencies
+    implementation("androidx.test:core:1.4.0")
+
 }

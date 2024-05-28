@@ -22,8 +22,8 @@ interface MyFitFriendLocalRepository {
     suspend fun removeLog(dietaryLogId: Int):Int
     suspend fun getDietaryLogByDateAndPartOfDay(todayDate: String , partOfDay:Int):List<DietaryLogEntity>
     suspend fun setDietaryLogs(serverDietaryLogs: List<DietaryLogEntity>):List<Long>
-suspend fun getDietaryLogsLB(): List<DietaryLogEntity>
-suspend fun getDietaryLogByIdLB(dietaryLogId:Int):DietaryLogEntity
+    suspend fun getDietaryLogsLB(): List<DietaryLogEntity>
+    suspend fun getDietaryLogByIdLB(dietaryLogId:Int):DietaryLogEntity
     //user funcs
     suspend fun getUser():UserEntity?
     suspend fun addAndEditUser(userEntity: UserEntity):Long

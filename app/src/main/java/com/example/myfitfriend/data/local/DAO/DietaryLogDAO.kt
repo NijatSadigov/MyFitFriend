@@ -32,9 +32,6 @@ interface DietaryLogDAO {
 
 
     //dietaryLogs
-    @Query("SELECT * FROM DietaryLogTable WHERE date = :todayDate ORDER BY dietaryLogId ASC")
-    suspend fun getTodayLogsByASCID(todayDate: String): List<DietaryLogEntity>
-
 
 
     @Query("DELETE FROM DietaryLogTable")
@@ -51,6 +48,9 @@ interface DietaryLogDAO {
 
     @Query("DELETE FROM DietaryLogTable WHERE dietaryLogId = :dietaryLogId")
     suspend fun removeLog(dietaryLogId: Int): Int
+
+    @Query("SELECT * FROM DietaryLogTable WHERE date = :todayDate ORDER BY dietaryLogId ASC")
+    suspend fun getTodayLogsByASCID(todayDate: String): List<DietaryLogEntity>
 
 
     @Query("SELECT * FROM DietaryLogTable WHERE dietaryLogId = :dietaryLogId LIMIT 1")
