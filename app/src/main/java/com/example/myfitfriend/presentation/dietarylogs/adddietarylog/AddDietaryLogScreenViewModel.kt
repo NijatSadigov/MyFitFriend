@@ -34,7 +34,6 @@ class AddDietaryLogScreenViewModel @Inject constructor(
    private val getFoodUseCase: GetFoodByIdUseCaseLB,
     private val insertDietaryLogsEntityUseCaseLB: InsertDietaryLogsEntityUseCaseLB,
     private val getUserUseCaseLB: GetUserUseCaseLB,
-    private val syncOperationsUtil: SyncOperationsUtil
 
 
 ):ViewModel() {

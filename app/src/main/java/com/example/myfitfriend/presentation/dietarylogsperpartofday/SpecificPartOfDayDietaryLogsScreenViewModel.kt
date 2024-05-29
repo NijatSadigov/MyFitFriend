@@ -42,7 +42,7 @@ class SpecificPartOfDayDietaryLogsScreenViewModel @Inject constructor(
 ):ViewModel() {
 
     private val _dietaryLogs = mutableStateOf<List<DietaryLogEntity>>(emptyList())
-    private val dietaryLogs: State<List<DietaryLogEntity>> =_dietaryLogs
+    val dietaryLogs: State<List<DietaryLogEntity>> =_dietaryLogs
 
 
     private val _totalCalories = mutableStateOf(0.0)
@@ -81,6 +81,7 @@ viewModelScope.launch {
             is Resources.Loading -> {}
             is Resources.Success -> {
                 if (result.data==1){
+                    println("onDeleteDietaryLog succesfull")
                     if(isAdded)
                     insertDeletionEntity(dietaryLogId)
 
@@ -128,7 +129,7 @@ viewModelScope.launch {
                     is Resources.Success -> {
                         if(result.data!=null) {
                             _dietaryLogs.value = result.data
-
+                            println("viewmodel ${dietaryLogs.value}")
                             calculateTotalMacrosAndGetLogsFrame()
                         }
                         println(dietaryLogsFrame.value)

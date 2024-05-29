@@ -35,10 +35,6 @@ class EditDietaryLogScreenViewModel @Inject constructor(
 ):ViewModel() {
     private val _amountOfFood = mutableStateOf("100") //SHOULD be DOUBLE
     val amountOfFood : State<String> =_amountOfFood
-    /*
-    private val _foodId = mutableStateOf(0)
-    val foodId:State<Int> =_foodId
-    */
 
     private val _partOfDay = mutableStateOf(0)
     val partOfDay: State<Int> =_partOfDay

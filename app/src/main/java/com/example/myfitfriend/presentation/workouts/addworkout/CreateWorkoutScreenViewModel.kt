@@ -56,6 +56,7 @@ val createWorkoutTitle: State<String> = _createWorkoutTitle
                     }
                     is Resources.Loading -> {}
                     is Resources.Success -> {
+                        println("user data ${r.data}")
                         _userId.value=r.data?.userId ?:0
                     }
                 }
@@ -87,6 +88,7 @@ val createWorkoutTitle: State<String> = _createWorkoutTitle
 
                     }
                     is Resources.Success ->{
+                        println("created workout ${result.data}")
                         if(result.data !=null && result.data>0 && userId.value==0){
                             _workoutCreated.value=true
                         }

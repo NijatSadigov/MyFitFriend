@@ -26,7 +26,7 @@ try {
         emit(Resources.Loading())
 
        val response= repository.getUser()
-    //println("GetDietaryLogByIdUseCase : $response")
+    println("userEntity : $response")
         emit(Resources.Success(data=response))
 }
 catch (e:HttpException){
