@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myfitfriend.data.local.DeletedItemsEntity
 import com.example.myfitfriend.data.local.DietaryLogEntity
-import com.example.myfitfriend.data.local.asServerResponse
 import com.example.myfitfriend.data.local.domain.use_case.dietary_log.DeleteDietaryLogByIdUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.dietary_log.GetDietaryLogsByDateAndIdUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.foods.GetFoodByIdUseCaseLB

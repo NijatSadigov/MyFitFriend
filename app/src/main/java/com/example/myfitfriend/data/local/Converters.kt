@@ -33,31 +33,7 @@ fun FoodResponse.asLocalFood()=
 
 
 
-fun  DietaryLogEntity.asServerResponse()=
-    DietaryLogResponse(
-        amountOfFood = amountOfFood,
-        date = date,
-        foodId = foodId,
-        dietaryLogId = dietaryLogId,
-        foodItem = foodItem,
-        userId = 0,
-        partOfDay = partOfDay
-    )
 
-fun User.asUserEntity()=
-    UserEntity(
-        activityLevel = activityLevel,
-        age = age,
-        email = email,
-        height = height,
-        passwordHash = passwordHash,
-        sex = sex,
-        userId = userId,
-        username = username,
-        weight = weight,
-        lastEditDate = lastEditDate,
-        isSync = isSync
-    )
 fun UserEntity.asUser()=
     User(
         activityLevel = activityLevel,

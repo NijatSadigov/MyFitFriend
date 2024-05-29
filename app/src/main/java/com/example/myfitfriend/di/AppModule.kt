@@ -2,6 +2,7 @@ package com.example.myfitfriend.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.room.Room
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
@@ -51,69 +52,90 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+import java.security.GeneralSecurityException
 import javax.annotation.Signed
 import javax.inject.Singleton
+
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Singleton
-    @Provides
-    fun provideBasicAuthInterceptor() = BasicAuthInterceptor()
 
-    @Singleton
-    @Provides
-    fun provideMyFitFriendApi(
-        basicAuthInterceptor: BasicAuthInterceptor
-    ): MyFitFriendAPI {
-        val logging = HttpLoggingInterceptor()
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-        val client = OkHttpClient.Builder()
-            .addInterceptor(basicAuthInterceptor)
-            .addInterceptor(logging)
-            .build()
+        @Singleton
+        @Provides
+        fun provideBasicAuthInterceptor(sharedPreferences: SharedPreferences): BasicAuthInterceptor {
+            return BasicAuthInterceptor(sharedPreferences)
+        }
 
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(MyFitFriendAPI::class.java)
-    }
+        @Singleton
+        @Provides
+        fun provideMyFitFriendApi(
+            basicAuthInterceptor: BasicAuthInterceptor
+        ): MyFitFriendAPI {
+            val logging = HttpLoggingInterceptor()
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    @Singleton
-    @Provides
-    fun provideMyFitFriendRepository(api: MyFitFriendAPI):
-            MyFitFriendRepository = MyFitFriendRepositoryIMPL(api)
+            val client = OkHttpClient.Builder()
+                .addInterceptor(basicAuthInterceptor)
+                .addInterceptor(logging)
+                .build()
 
-    @Singleton
-    @Provides
-    fun provideMyFitFriendLocalRepository(dao: DietaryLogDAO):
-            MyFitFriendLocalRepository = MyFitFriendLocalRepositoryIMPL(dao)
+            return Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+                .create(MyFitFriendAPI::class.java)
+        }
 
-    @Singleton
-    @Provides
-    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-        val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-        return EncryptedSharedPreferences.create(
-            context,
-            ENCRYPTED_SHARED_PREF_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
+        @Singleton
+        @Provides
+        fun provideMyFitFriendRepository(api: MyFitFriendAPI): MyFitFriendRepository = MyFitFriendRepositoryIMPL(api)
 
-    @Singleton
-    @Provides
-    fun provideLocalDatabase(@ApplicationContext context: Context): LocalDB {
-        return Room.databaseBuilder(
-            context,
-            LocalDB::class.java,
-            "Local"
-        ).fallbackToDestructiveMigration().build()
-    }
+        @Singleton
+        @Provides
+        fun provideMyFitFriendLocalRepository(dao: DietaryLogDAO): MyFitFriendLocalRepository = MyFitFriendLocalRepositoryIMPL(dao)
+
+        @Singleton
+        @Provides
+        fun provideEncryptedSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+            return try {
+                val masterKey = MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+
+                EncryptedSharedPreferences.create(
+                    context,
+                    ENCRYPTED_SHARED_PREF_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            } catch (e: GeneralSecurityException) {
+                Log.e("AppModule", "Error creating encrypted shared preferences", e)
+                // Provide a fallback to regular SharedPreferences or throw an exception
+                context.getSharedPreferences(ENCRYPTED_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            } catch (e: IOException) {
+                Log.e("AppModule", "Error creating encrypted shared preferences", e)
+                // Provide a fallback to regular SharedPreferences or throw an exception
+                context.getSharedPreferences(ENCRYPTED_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            }
+        }
+
+        @Singleton
+        @Provides
+        fun provideLocalDatabase(@ApplicationContext context: Context): LocalDB {
+            return Room.databaseBuilder(
+                context,
+                LocalDB::class.java,
+                "Local"
+            ).fallbackToDestructiveMigration().build()
+        }
+
+
 
     @Provides
     fun provideSyncOperationsUtil(
@@ -173,12 +195,10 @@ object AppModule {
         )
     }
 
+
     @Singleton
     @Provides
     fun provideDietaryLogDao(db: LocalDB): DietaryLogDAO {
         return db.dietaryLogDao()
     }
-
-
-
 }

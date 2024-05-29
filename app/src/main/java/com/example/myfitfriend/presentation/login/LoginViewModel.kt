@@ -10,26 +10,13 @@ import com.example.myfitfriend.data.local.DietaryLogEntity
 import com.example.myfitfriend.data.local.ExerciseEntity
 import com.example.myfitfriend.data.local.LocalFoodEntity
 import com.example.myfitfriend.data.local.UserEntity
-import com.example.myfitfriend.data.local.WorkoutEntity
-import com.example.myfitfriend.data.local.asDietaryLogEntity
-import com.example.myfitfriend.data.local.asExerciseEntity
+
 import com.example.myfitfriend.data.local.asLocalFood
-import com.example.myfitfriend.data.local.asUser
-import com.example.myfitfriend.data.local.asUserEntity
-import com.example.myfitfriend.data.local.asWorkoutEntity
-import com.example.myfitfriend.data.local.domain.use_case.dietary_log.SetDietaryLogsUseCaseLB
-import com.example.myfitfriend.data.local.domain.use_case.exercise.SetExercisesUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.foods.SetFoodsUseCaseLB
-import com.example.myfitfriend.data.local.domain.use_case.user.ClearUserUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.user.SetUserUseCaseLB
-import com.example.myfitfriend.data.local.domain.use_case.workout.SetWorkoutsUseCaseLB
 import com.example.myfitfriend.data.remote.BasicAuthInterceptor
 import com.example.myfitfriend.data.remote.requests.UserLoginRequest
-import com.example.myfitfriend.domain.use_case.Workout.GetWorkoutsUseCase
-import com.example.myfitfriend.domain.use_case.Workout.exercise.GetExercisesUseCase
-import com.example.myfitfriend.domain.use_case.dietarylogs.GetDietaryLogsUseCase
 import com.example.myfitfriend.domain.use_case.dietarylogs.ShowFoodsUseCase
-import com.example.myfitfriend.domain.use_case.users.GetUserDetailsByIdUseCase
 import com.example.myfitfriend.domain.use_case.users.LoginUserCase
 import com.example.myfitfriend.domain.use_case.users.ProfileUserCase
 import com.example.myfitfriend.util.Constants.KEY_LOGGED_IN_EMAIL
@@ -48,21 +35,12 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUserCase: LoginUserCase,
     private val sharedPreferences: SharedPreferences,
-    private val basicAuthInterceptor: BasicAuthInterceptor,
 
     private val profileUserCase: ProfileUserCase,
     private val setUserUseCaseLB: SetUserUseCaseLB,
 
     private val getFoodsUseCase:ShowFoodsUseCase,
     private val setFoodsUseCaseLB: SetFoodsUseCaseLB,
-    private val getDietaryLogsUseCase: GetDietaryLogsUseCase,
-    private val setDietaryLogsUseCaseLB: SetDietaryLogsUseCaseLB,
-
-    private val getWorkoutsUseCase: GetWorkoutsUseCase,
-    private val setWorkoutsUseCaseLB: SetWorkoutsUseCaseLB,
-
-    private val getExercises:GetExercisesUseCase,
-    private val setExercisesUseCaseLB: SetExercisesUseCaseLB
 
 ) : ViewModel() {
     private val _emailState = mutableStateOf("")
@@ -119,10 +97,18 @@ class LoginViewModel @Inject constructor(
             }.launchIn(viewModelScope)
         }
     }
+    fun authAPI(email: String, password: String) {
+        viewModelScope.launch {
 
-    private fun authAPI(email: String, password: String) {
-        basicAuthInterceptor.email = email
-        basicAuthInterceptor.password = password
+            saveCredentials(sharedPreferences, email, password)
+        }
+    }
+
+    private fun saveCredentials(sharedPreferences: SharedPreferences, email: String, password: String) {
+        val editor = sharedPreferences.edit()
+        editor.putString("email", email)
+        editor.putString("password", password)
+        editor.apply()
     }
 
     private fun successfullyLoggedIn() {
@@ -130,7 +116,6 @@ class LoginViewModel @Inject constructor(
         sharedPreferences.edit().putString(KEY_PASSWORD, passwordState.value).apply()
 
         authAPI(emailState.value, passwordState.value)
-       //get user ->set user | setFoods|setDietaryLogs
 
         getUserFromServer()
         getFoods()

@@ -77,14 +77,20 @@ class DietaryLogsViewModel
 
     fun setConnectionState(state: ConnectivityObserver.Status) {
         _connectionStatus.value = state
-        println("state $state")
+        println("LOG state $state")
         if (connectionStatus.value == ConnectivityObserver.Status.Available) {
             viewModelScope.launch {
+                println("LOG login sync started")
+
                 // Start sync deletions and wait for it to complete
                 val job1=syncOperationsUtil.syncProfileDetails(viewModelScope)
                 job1.join()
+                println(" LOG login sync profile done")
+
                 val job2 =syncOperationsUtil.syncDeletions(scope = viewModelScope)
                 job2.join()
+                println("LOG login sync deletions  done")
+
                 // Start sync dietary logs and sync workouts in parallel
                 val dietaryLogsJob = syncOperationsUtil.syncDietaryLogs(viewModelScope)
                 val workoutsJob = syncOperationsUtil.syncWorkouts(viewModelScope)
@@ -92,9 +98,12 @@ class DietaryLogsViewModel
                 // Wait for both to complete
                 dietaryLogsJob.join()
                 workoutsJob.join()
+                println("LOG login sync dietarylogs done")
 
                 // Fetch dietary logs after sync is complete
                 getDietaryLogs().join()
+                println("LOG login get final synced data done")
+
             }
         }
     }

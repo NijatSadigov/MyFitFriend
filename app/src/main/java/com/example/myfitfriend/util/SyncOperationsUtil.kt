@@ -17,10 +17,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import com.example.myfitfriend.data.local.asUserEntity
 import com.example.myfitfriend.data.local.asWorkoutEntity
 import com.example.myfitfriend.data.local.domain.use_case.dietary_log.ClearDietaryLogsUseCaseLB
-import com.example.myfitfriend.data.local.domain.use_case.dietary_log.DeleteDietaryLogByIdUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.dietary_log.SetDietaryLogsUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.exercise.ClearExercisesUseCaseLB
 import com.example.myfitfriend.data.local.domain.use_case.exercise.GetExerciseByWorkoutIdUseCaseLB
@@ -31,7 +29,6 @@ import com.example.myfitfriend.data.local.domain.use_case.workout.GetWorkoutsUse
 import com.example.myfitfriend.data.local.domain.use_case.workout.SetWorkoutsUseCaseLB
 import com.example.myfitfriend.data.remote.reponses.User
 import com.example.myfitfriend.data.remote.reponses.Workout
-import com.example.myfitfriend.data.remote.requests.DietaryLogRequest
 import com.example.myfitfriend.data.remote.requests.UserEditRequest
 import com.example.myfitfriend.domain.repository.MyFitFriendLocalRepository
 import com.example.myfitfriend.domain.use_case.Workout.CreateWorkoutUseCase
@@ -47,7 +44,6 @@ import com.example.myfitfriend.domain.use_case.sync.delete.DeleteDeletionTableUs
 import com.example.myfitfriend.domain.use_case.sync.delete.GetDeletionTableUseCaseLB
 import com.example.myfitfriend.domain.use_case.users.ProfileUserCase
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class SyncOperationsUtil

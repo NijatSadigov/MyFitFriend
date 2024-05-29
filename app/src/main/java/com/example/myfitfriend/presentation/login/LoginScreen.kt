@@ -1,3 +1,4 @@
+
 package com.example.myfitfriend.presentation.login
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
     LaunchedEffect(key1 = navController) {
         viewModel.isLoggedIn()
+        println("login screen")
     }
 
     LaunchedEffect(key1 = viewModel.logInState.value) {

@@ -26,7 +26,7 @@ fun DietaryLogsScreen(navController: NavController,
     // Launch effect to load dietary logs when the component is first composed
     LaunchedEffect(key1 = true) {
         viewModel.getDietaryLogs()
-        //viewModel.getDietaryLogByDateAndPartOfDay()
+
     }
     val status by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
